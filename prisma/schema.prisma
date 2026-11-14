@@ -1,0 +1,84 @@
+generator client {
+  provider   = "prisma-client-js"
+  // No native query engine: queries go through a JS driver adapter (Neon),
+  // which is what Cloudflare Workers needs and keeps the bundle small.
+  engineType = "client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url       = env("DATABASE_URL") // pooled: used by the app
+  directUrl = env("DATABASE_URL_UNPOOLED") // direct: used by db push / migrations
+}
+
+enum TournamentFormat {
+  SINGLE_ELIMINATION
+  ROUND_ROBIN
+  DOUBLE_ELIMINATION // Phase 3
+  SWISS // Phase 3
+}
+
+enum TournamentStatus {
+  DRAFT // created, editing participants
+  IN_PROGRESS // bracket generated, matches being played
+  COMPLETED
+}
+
+enum MatchStatus {
+  PENDING // waiting for participants
+  READY // both participants known
+  COMPLETED
+}
+
+// Phase 2: filled in by Auth.js
+model User {
+  id          String       @id @default(cuid())
+  email       String       @unique
+  name        String?
+  createdAt   DateTime     @default(now())
+  tournaments Tournament[]
+}
+
+model Tournament {
+  id           String           @id @default(cuid())
+  name         String
+  game         String?
+  format       TournamentFormat @default(SINGLE_ELIMINATION)
+  status       TournamentStatus @default(DRAFT)
+  ownerId      String?
+  owner        User?            @relation(fields: [ownerId], references: [id])
+  participants Participant[]
+  matches      Match[]
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+}
+
+model Participant {
+  id           String     @id @default(cuid())
+  name         String
+  seed         Int
+  tournamentId String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+
+  @@unique([tournamentId, seed])
+}
+
+model Match {
+  id             String      @id @default(cuid())
+  tournamentId   String
+  tournament     Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  round          Int
+  position       Int
+  participant1Id String?
+  participant2Id String?
+  score1         Int?
+  score2         Int?
+  winnerId       String?
+  status         MatchStatus @default(PENDING)
+  // Elimination brackets: where the winner goes next
+  nextMatchId    String?
+  nextMatchSlot  Int? // 1 or 2
+
+  @@unique([tournamentId, round, position])
+  @@index([tournamentId])
+}
