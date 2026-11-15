@@ -5,9 +5,11 @@ type Props = {
   matches: Match[];
   names: Record<string, string>;
   format: TournamentFormat;
+  /** Show score entry and correction controls (organizer only). */
+  canManage?: boolean;
 };
 
-export function Bracket({ matches, names, format }: Props) {
+export function Bracket({ matches, names, format, canManage = false }: Props) {
   if (format === "DOUBLE_ELIMINATION") {
     const winners = matches.filter((m) => m.bracket === "WINNERS");
     // Byes inside the losers bracket resolve automatically; hiding them keeps it readable.
@@ -16,15 +18,15 @@ export function Bracket({ matches, names, format }: Props) {
     return (
       <div className="space-y-10">
         <Section title="Winners bracket">
-          <Rounds matches={winners} names={names} connected label={(i, n) => (i === n ? "Winners final" : `Round ${i}`)} />
+          <Rounds canManage={canManage} matches={winners} names={names} connected label={(i, n) => (i === n ? "Winners final" : `Round ${i}`)} />
         </Section>
         {losers.length > 0 && (
           <Section title="Losers bracket">
-            <Rounds matches={losers} names={names} label={(i, n) => (i === n ? "Losers final" : `Round ${i}`)} />
+            <Rounds canManage={canManage} matches={losers} names={names} label={(i, n) => (i === n ? "Losers final" : `Round ${i}`)} />
           </Section>
         )}
         <Section title="Grand final">
-          <Rounds matches={finals} names={names} label={(i) => (i === 1 ? "Grand final" : "Bracket reset")} />
+          <Rounds canManage={canManage} matches={finals} names={names} label={(i) => (i === 1 ? "Grand final" : "Bracket reset")} />
         </Section>
       </div>
     );
@@ -34,6 +36,7 @@ export function Bracket({ matches, names, format }: Props) {
     return (
       <Section title="Bracket">
         <Rounds
+          canManage={canManage}
           matches={matches}
           names={names}
           connected
@@ -47,7 +50,7 @@ export function Bracket({ matches, names, format }: Props) {
 
   return (
     <Section title="Matches">
-      <Rounds matches={matches} names={names} label={(i) => `Round ${i}`} />
+      <Rounds canManage={canManage} matches={matches} names={names} label={(i) => `Round ${i}`} />
     </Section>
   );
 }
@@ -71,11 +74,13 @@ function Rounds({
   names,
   label,
   connected = false,
+  canManage,
 }: {
   matches: Match[];
   names: Record<string, string>;
   label: (index: number, total: number) => string;
   connected?: boolean;
+  canManage: boolean;
 }) {
   const rounds = new Map<number, Match[]>();
   for (const m of [...matches].sort((a, b) => a.round - b.round || a.position - b.position)) {
@@ -98,10 +103,10 @@ function Rounds({
               {ms.map((m) =>
                 connected ? (
                   <div key={m.id} className="bk-cell">
-                    <MatchCard match={m} names={names} />
+                    <MatchCard match={m} names={names} canManage={canManage} />
                   </div>
                 ) : (
-                  <MatchCard key={m.id} match={m} names={names} />
+                  <MatchCard key={m.id} match={m} names={names} canManage={canManage} />
                 ),
               )}
             </div>

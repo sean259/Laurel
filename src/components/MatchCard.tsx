@@ -7,7 +7,15 @@ import { useState } from "react";
 const scoreInput =
   "w-12 rounded-md border border-zinc-300 bg-white px-1.5 py-0.5 text-sm outline-none focus:border-amber-500";
 
-export function MatchCard({ match, names }: { match: Match; names: Record<string, string> }) {
+export function MatchCard({
+  match,
+  names,
+  canManage,
+}: {
+  match: Match;
+  names: Record<string, string>;
+  canManage: boolean;
+}) {
   const router = useRouter();
   const [s1, setS1] = useState("");
   const [s2, setS2] = useState("");
@@ -15,9 +23,9 @@ export function MatchCard({ match, names }: { match: Match; names: Record<string
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const ready = match.status === "READY";
+  const ready = match.status === "READY" && canManage;
   const done = match.status === "COMPLETED";
-  const editable = done && !match.bye;
+  const editable = done && !match.bye && canManage;
   const showForm = ready || editing;
 
   function startEditing() {
@@ -79,7 +87,7 @@ export function MatchCard({ match, names }: { match: Match; names: Record<string
   return (
     <div
       className={`w-full overflow-hidden rounded-xl border bg-white text-left shadow-sm ${
-        showForm ? "border-amber-300 ring-4 ring-amber-400/10" : "border-zinc-200"
+        showForm || (match.status === "READY" && !canManage) ? "border-amber-300 ring-4 ring-amber-400/10" : "border-zinc-200"
       } ${match.bye ? "opacity-60" : ""}`}
     >
       {editable && !editing ? (

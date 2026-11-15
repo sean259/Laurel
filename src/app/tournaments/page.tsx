@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getDb } from "@/lib/db";
+import { currentUserId } from "@/lib/access";
 import { formatLabel } from "@/lib/formats";
 import { LaurelMark } from "@/components/LaurelMark";
 import { StatusBadge } from "@/components/StatusBadge";
@@ -10,6 +11,7 @@ const dateFmt = new Intl.DateTimeFormat("en", { month: "short", day: "numeric", 
 
 export default async function TournamentsPage() {
   const db = getDb();
+  const userId = await currentUserId();
   const tournaments = await db.tournament.findMany({
     orderBy: { createdAt: "desc" },
     include: { _count: { select: { participants: true } } },
@@ -55,7 +57,9 @@ export default async function TournamentsPage() {
                   <h2 className="font-display text-xl font-semibold leading-snug group-hover:text-amber-700">{t.name}</h2>
                   <StatusBadge status={t.status} />
                 </div>
-                <p className="mt-1 text-sm text-zinc-500">{t.game ?? "Any game"}</p>
+                <p className="mt-1 text-sm text-zinc-500">{t.game ?? "Any game"}
+                  {userId && t.ownerId === userId && <span className="ml-2 font-medium text-amber-700">· Yours</span>}
+                </p>
                 <div className="mt-auto flex items-center justify-between pt-6 text-xs text-zinc-500">
                   <span className="rounded-full border border-zinc-200 px-2.5 py-0.5">{formatLabel(t.format)}</span>
                   <span>

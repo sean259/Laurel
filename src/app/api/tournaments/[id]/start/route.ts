@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { denyUnlessOwner } from "@/lib/access";
 import { generateInitialMatches } from "@/lib/report";
 
 // Generates the bracket and moves the tournament from DRAFT to IN_PROGRESS.
 export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const db = getDb();
   const { id } = await params;
+  const denied = await denyUnlessOwner({ tournamentId: id });
+  if (denied) return denied;
   const tournament = await db.tournament.findUnique({
     where: { id },
     include: { participants: { orderBy: { seed: "asc" } } },

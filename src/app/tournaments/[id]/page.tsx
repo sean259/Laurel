@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDb } from "@/lib/db";
+import { currentUserId } from "@/lib/access";
 import { formatLabel } from "@/lib/formats";
 import { computeStandings, findChampion } from "@/lib/standings";
 import { swissRoundCount } from "@/lib/swiss";
@@ -23,6 +24,7 @@ export default async function TournamentPage({ params }: { params: Promise<{ id:
     },
   });
   if (!tournament) notFound();
+  const canManage = tournament.ownerId !== null && tournament.ownerId === (await currentUserId());
 
   const { format, matches, status } = tournament;
   const ids = tournament.participants.map((p) => p.id);
@@ -56,15 +58,17 @@ export default async function TournamentPage({ params }: { params: Promise<{ id:
               {progress && status === "IN_PROGRESS" && <span className="text-xs text-zinc-400">{progress}</span>}
             </div>
           </div>
-          <div className="flex items-start gap-2">
-            <Link
-              href={`/tournaments/${tournament.id}/edit`}
-              className="rounded-full border border-white/20 px-5 py-2.5 text-sm font-medium hover:bg-white/10"
-            >
-              Edit
-            </Link>
-            {status === "DRAFT" && <StartButton tournamentId={tournament.id} />}
-          </div>
+          {canManage && (
+            <div className="flex items-start gap-2">
+              <Link
+                href={`/tournaments/${tournament.id}/edit`}
+                className="rounded-full border border-white/20 px-5 py-2.5 text-sm font-medium hover:bg-white/10"
+              >
+                Edit
+              </Link>
+              {status === "DRAFT" && <StartButton tournamentId={tournament.id} />}
+            </div>
+          )}
         </div>
 
         {champion && (
@@ -90,7 +94,7 @@ export default async function TournamentPage({ params }: { params: Promise<{ id:
             ))}
           </ol>
           <p className="mt-4 text-sm text-zinc-500">
-            Numbers are seeds. Start the tournament to generate the {formatLabel(format).toLowerCase()} bracket.
+            Numbers are seeds.{canManage && <> Start the tournament to generate the {formatLabel(format).toLowerCase()} bracket.</>}
           </p>
         </section>
       ) : (
@@ -101,8 +105,8 @@ export default async function TournamentPage({ params }: { params: Promise<{ id:
               <Standings standings={computeStandings(ids, matches, format)} names={names} showBuchholz={format === "SWISS"} />
             </section>
           )}
-          <Bracket matches={matches} names={names} format={format} />
-          {played > 0 && (
+          <Bracket matches={matches} names={names} format={format} canManage={canManage} />
+          {canManage && played > 0 && (
             <p className="-mt-6 text-sm text-zinc-500">Tip: click a finished match to correct or undo its result.</p>
           )}
         </>

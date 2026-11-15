@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Fraunces, Inter } from "next/font/google";
 import { LaurelMark } from "@/components/LaurelMark";
+import { UserMenu } from "@/components/AuthButtons";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -17,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
       <body className="flex min-h-screen flex-col bg-zinc-50 font-sans text-zinc-900 antialiased">
         <header className="border-b border-zinc-200 bg-white/80 backdrop-blur">
-          <nav className="mx-auto flex max-w-6xl items-center gap-6 px-4 py-3">
+          <nav className="mx-auto flex max-w-6xl items-center gap-4 px-4 py-3 sm:gap-6">
             <Link href="/" className="flex items-center gap-2 font-display text-xl font-semibold">
               <LaurelMark className="h-6 w-6 text-amber-500" />
               Laurel
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <span className="sm:hidden">+ New</span>
               <span className="hidden sm:inline">New tournament</span>
             </Link>
+            <UserMenu />
           </nav>
         </header>
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">{children}</main>

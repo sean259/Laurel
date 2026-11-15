@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
+import { currentUserId } from "@/lib/access";
 import { DangerZone } from "@/components/DangerZone";
 import { TournamentForm } from "@/components/TournamentForm";
 
@@ -14,6 +15,8 @@ export default async function EditTournamentPage({ params }: { params: Promise<{
     include: { participants: { orderBy: { seed: "asc" }, select: { name: true } } },
   });
   if (!t) notFound();
+  // Only the organizer can edit; everyone else just sees the tournament.
+  if (!t.ownerId || t.ownerId !== (await currentUserId())) redirect(`/tournaments/${t.id}`);
   const started = t.status !== "DRAFT";
 
   return (

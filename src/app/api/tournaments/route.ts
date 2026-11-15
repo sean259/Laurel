@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { createTournamentSchema } from "@/lib/validation";
+import { currentUserId, unauthorized } from "@/lib/access";
 
 export async function GET() {
   const db = getDb();
@@ -9,6 +10,8 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  const ownerId = await currentUserId();
+  if (!ownerId) return unauthorized();
   const db = getDb();
   const parsed = createTournamentSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
@@ -21,6 +24,7 @@ export async function POST(req: Request) {
       name,
       game,
       format,
+      ownerId,
       participants: { create: participants.map((p, i) => ({ name: p, seed: i + 1 })) },
     },
   });

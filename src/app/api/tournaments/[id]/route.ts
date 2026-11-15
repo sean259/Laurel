@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { updateTournamentSchema } from "@/lib/validation";
+import { denyUnlessOwner } from "@/lib/access";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -9,6 +10,8 @@ type Ctx = { params: Promise<{ id: string }> };
 export async function PATCH(req: Request, { params }: Ctx) {
   const db = getDb();
   const { id } = await params;
+  const denied = await denyUnlessOwner({ tournamentId: id });
+  if (denied) return denied;
   const parsed = updateTournamentSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid input" }, { status: 400 });
@@ -65,6 +68,8 @@ export async function PATCH(req: Request, { params }: Ctx) {
 export async function DELETE(_req: Request, { params }: Ctx) {
   const db = getDb();
   const { id } = await params;
+  const denied = await denyUnlessOwner({ tournamentId: id });
+  if (denied) return denied;
   // Participants and matches are removed by the cascade in the schema.
   const { count } = await db.tournament.deleteMany({ where: { id } });
   if (count === 0) return NextResponse.json({ error: "Not found" }, { status: 404 });

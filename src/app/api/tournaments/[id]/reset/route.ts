@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { denyUnlessOwner } from "@/lib/access";
 
 // Throw away the bracket and all results, returning the tournament to DRAFT.
 export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   const db = getDb();
   const { id } = await params;
+  const denied = await denyUnlessOwner({ tournamentId: id });
+  if (denied) return denied;
   const tournament = await db.tournament.findUnique({ where: { id }, select: { id: true } });
   if (!tournament) return NextResponse.json({ error: "Not found" }, { status: 404 });
 

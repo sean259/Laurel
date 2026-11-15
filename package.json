@@ -25,6 +25,7 @@
     "@prisma/adapter-neon": "^6.19.3",
     "@prisma/client": "^6.16.0",
     "next": "^15.5.0",
+    "next-auth": "^5.0.0-beta.32",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "zod": "^3.25.0"
