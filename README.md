@@ -36,6 +36,8 @@ git switch main && git merge dev && git push   # release
 npm run preview                         # build + run on the real Workers runtime locally
 npx wrangler login                      # once
 npx wrangler secret put DATABASE_URL    # once, paste the pooled Neon URL
+npx wrangler secret put NEON_AUTH_BASE_URL
+npx wrangler secret put NEON_AUTH_COOKIE_SECRET
 npm run deploy                          # build + deploy to <name>.<subdomain>.workers.dev
 ```
 

@@ -10,7 +10,7 @@
 | Database | **PostgreSQL** | Tournaments are highly relational (tournament → participants → matches → next match). Transactions keep score reporting consistent. |
 | ORM | **Prisma** | Type-safe queries, easy migrations, Prisma Studio for inspecting data. |
 | Validation | **Zod** | Validates every API input. |
-| Auth (Phase 2) | **Auth.js (NextAuth)** | Google/Discord login with little code; Discord is popular with gaming communities. |
+| Auth | **Neon Auth** (Managed Better Auth) | Email one-time codes, no passwords; free up to 60k monthly users; Neon sends the emails. |
 | Realtime (Phase 4) | **Pusher** or **Ably** (or Supabase Realtime) | Vercel serverless can't hold WebSockets itself; these services do it for you. |
 | Testing | **Vitest** (unit) + **Playwright** (end-to-end) | Bracket generators are pure functions, so they're ideal for unit tests. |
 
@@ -122,8 +122,8 @@ Browser ──fetch──▶ /api/... route ──Zod validate──▶ Prisma t
 - [x] **Deploy to Cloudflare + Neon**: live at https://laurel.seanlorico9.workers.dev
 
 ### Phase 2 — Accounts & ownership (1–2 weeks)
-- [ ] Auth.js sign-in (Google + Discord)
-- [ ] Only the tournament owner can start it or report scores
+- [x] Sign in with an emailed one-time code (Neon Auth)
+- [x] Only the tournament owner can manage it (start, scores, edit, reset, delete)
 - [ ] Dashboard of "my tournaments"
 - [x] Edit / delete tournaments; add/remove/reorder participants while in DRAFT (rename any time); reset to draft
 - [x] Undo or correct a reported score (refuses if a later match already depends on it)

@@ -36,27 +36,20 @@ enum MatchStatus {
   COMPLETED
 }
 
-// Phase 2: filled in by Auth.js
-model User {
-  id          String       @id @default(cuid())
-  email       String       @unique
-  name        String?
-  createdAt   DateTime     @default(now())
-  tournaments Tournament[]
-}
-
 model Tournament {
   id           String           @id @default(cuid())
   name         String
   game         String?
   format       TournamentFormat @default(SINGLE_ELIMINATION)
   status       TournamentStatus @default(DRAFT)
+  // Neon Auth user id (neon_auth schema). Only the owner can manage the tournament.
   ownerId      String?
-  owner        User?            @relation(fields: [ownerId], references: [id])
   participants Participant[]
   matches      Match[]
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
+
+  @@index([ownerId])
 }
 
 model Participant {

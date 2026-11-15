@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Fraunces, Inter } from "next/font/google";
 import { LaurelMark } from "@/components/LaurelMark";
-import { UserMenu } from "@/components/AuthButtons";
+import { UserMenu } from "@/components/UserMenu";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });

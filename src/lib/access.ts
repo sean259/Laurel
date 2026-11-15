@@ -1,11 +1,10 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { currentUser } from "./auth/server";
 import { getDb } from "./db";
 
 /** The signed-in user's id, or null. */
 export async function currentUserId(): Promise<string | null> {
-  const session = await auth();
-  return session?.user?.id ?? null;
+  return (await currentUser())?.id ?? null;
 }
 
 export const unauthorized = () => NextResponse.json({ error: "Sign in to do that" }, { status: 401 });

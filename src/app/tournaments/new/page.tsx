@@ -1,12 +1,12 @@
-import { auth } from "@/auth";
-import { SignInButton } from "@/components/AuthButtons";
+import Link from "next/link";
+import { currentUser } from "@/lib/auth/server";
 import { LaurelMark } from "@/components/LaurelMark";
 import { TournamentForm } from "@/components/TournamentForm";
 
-export default async function NewTournamentPage() {
-  const session = await auth();
+export const dynamic = "force-dynamic";
 
-  if (!session?.user) {
+export default async function NewTournamentPage() {
+  if (!(await currentUser())) {
     return (
       <div className="mx-auto max-w-md rounded-3xl border border-zinc-200 bg-white px-6 py-12 text-center">
         <LaurelMark className="mx-auto h-10 w-10 text-amber-500" />
@@ -15,9 +15,12 @@ export default async function NewTournamentPage() {
           Your tournaments are tied to your account, so only you can report scores and make changes. Anyone with the link
           can still follow along.
         </p>
-        <div className="mt-6 flex justify-center">
-          <SignInButton redirectTo="/tournaments/new" />
-        </div>
+        <Link
+          href="/sign-in?next=/tournaments/new"
+          className="mt-6 inline-block rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-zinc-700"
+        >
+          Sign in with email
+        </Link>
       </div>
     );
   }
