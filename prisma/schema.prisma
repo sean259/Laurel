@@ -14,8 +14,14 @@ datasource db {
 enum TournamentFormat {
   SINGLE_ELIMINATION
   ROUND_ROBIN
-  DOUBLE_ELIMINATION // Phase 3
-  SWISS // Phase 3
+  DOUBLE_ELIMINATION
+  SWISS
+}
+
+enum MatchBracket {
+  WINNERS // also used for single elimination, round robin and Swiss
+  LOSERS // double elimination only
+  GRAND_FINAL // double elimination only (round 2 = bracket reset)
 }
 
 enum TournamentStatus {
@@ -67,6 +73,7 @@ model Match {
   id             String      @id @default(cuid())
   tournamentId   String
   tournament     Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  bracket        MatchBracket @default(WINNERS)
   round          Int
   position       Int
   participant1Id String?
@@ -75,10 +82,14 @@ model Match {
   score2         Int?
   winnerId       String?
   status         MatchStatus @default(PENDING)
-  // Elimination brackets: where the winner goes next
-  nextMatchId    String?
-  nextMatchSlot  Int? // 1 or 2
+  // A bye: one slot will never be filled, so whoever arrives advances automatically
+  bye                Boolean @default(false)
+  // Elimination brackets: where the winner (and, in double elimination, the loser) goes next
+  nextMatchId        String?
+  nextMatchSlot      Int? // 1 or 2
+  loserNextMatchId   String?
+  loserNextMatchSlot Int?
 
-  @@unique([tournamentId, round, position])
+  @@unique([tournamentId, bracket, round, position])
   @@index([tournamentId])
 }

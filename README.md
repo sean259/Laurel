@@ -18,7 +18,17 @@ npm run db:push               # create tables
 npm run dev                   # http://localhost:3000
 ```
 
-Useful: `npm run db:studio` opens a GUI for the database.
+Useful: `npm run db:studio` opens a GUI for the database. `npm test` runs the bracket tests.
+
+## Branches
+
+- `dev`: day-to-day work lands here first.
+- `main`: stable. Merge `dev` into `main` once it's tested.
+
+```bash
+git switch dev            # work, commit, push
+git switch main && git merge dev && git push   # release
+```
 
 ## Cloudflare
 

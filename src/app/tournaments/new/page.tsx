@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { FORMATS } from "@/lib/formats";
 
 export default function NewTournamentPage() {
   const router = useRouter();
@@ -55,13 +56,21 @@ export default function NewTournamentPage() {
         <input name="game" className="mt-1 w-full rounded border px-3 py-2" placeholder="Chess, FIFA, Valorant…" />
       </label>
 
-      <label className="block">
-        <span className="text-sm font-medium">Format</span>
-        <select name="format" className="mt-1 w-full rounded border px-3 py-2">
-          <option value="SINGLE_ELIMINATION">Single elimination</option>
-          <option value="ROUND_ROBIN">Round robin</option>
-        </select>
-      </label>
+      <fieldset>
+        <legend className="text-sm font-medium">Format</legend>
+        <div className="mt-2 grid gap-2 sm:grid-cols-2">
+          {FORMATS.map((f, i) => (
+            <label
+              key={f.value}
+              className="cursor-pointer rounded-lg border border-zinc-200 p-3 hover:border-zinc-400 has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50"
+            >
+              <input type="radio" name="format" value={f.value} defaultChecked={i === 0} className="sr-only" />
+              <span className="block text-sm font-medium">{f.label}</span>
+              <span className="mt-1 block text-xs text-zinc-500">{f.description}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
 
       <label className="block">
         <span className="text-sm font-medium">Participants (one per line, in seed order)</span>

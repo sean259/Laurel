@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getDb } from "@/lib/db";
+import { formatLabel } from "@/lib/formats";
 
 export const dynamic = "force-dynamic";
 
@@ -28,7 +29,7 @@ export default async function TournamentsPage() {
                   {t.game && <span className="ml-2 text-sm text-zinc-500">{t.game}</span>}
                 </span>
                 <span className="text-sm text-zinc-500">
-                  {t._count.participants} players · {t.format.replace("_", " ").toLowerCase()} · {t.status.replace("_", " ").toLowerCase()}
+                  {t._count.participants} players · {formatLabel(t.format)} · {t.status.replace("_", " ").toLowerCase()}
                 </span>
               </Link>
             </li>

@@ -10,7 +10,7 @@ export function MatchCard({ match, names }: { match: Match; names: Record<string
   const [s2, setS2] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const isBye = match.status === "COMPLETED" && (!match.participant1Id || !match.participant2Id);
+  const isBye = match.bye;
 
   async function report(e: React.FormEvent) {
     e.preventDefault();

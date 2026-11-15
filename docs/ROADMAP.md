@@ -106,7 +106,7 @@ Browser ──fetch──▶ /api/... route ──Zod validate──▶ Prisma t
 - [x] Next.js + TS + Tailwind + Prisma project
 - [x] Database schema (User, Tournament, Participant, Match)
 - [x] Local Postgres via Docker
-- [ ] `git init`, push to GitHub
+- [x] `git init`, push to GitHub (`main` = stable, `dev` = work in progress)
 - [ ] Add ESLint + Prettier
 
 ### Phase 1 — MVP: working brackets (1–2 weeks)
@@ -114,11 +114,11 @@ Browser ──fetch──▶ /api/... route ──Zod validate──▶ Prisma t
 - [x] Single-elimination generation with seeding and byes
 - [x] Round-robin generation (circle method)
 - [x] Report scores, auto-advance winners, finish tournament
-- [ ] Round-robin **standings table** (W/L, points, tiebreakers)
-- [ ] Unit tests for `src/lib/bracket.ts` (2, 3, 5, 8, 13 players)
+- [x] Round-robin **standings table** (W/L, score difference, tiebreakers)
+- [x] Unit tests (Vitest): every format simulated end to end for 2–64 players (`npm test`)
 - [ ] Shuffle-seeds option
 - [ ] Loading / error / 404 pages
-- [ ] **Deploy to Vercel + Neon** (deploy early; it stays easy)
+- [ ] **Deploy to Cloudflare + Neon** (deploy early; it stays easy)
 
 ### Phase 2 — Accounts & ownership (1–2 weeks)
 - [ ] Auth.js sign-in (Google + Discord)
@@ -131,8 +131,8 @@ Browser ──fetch──▶ /api/... route ──Zod validate──▶ Prisma t
 - [ ] Rate limiting on write endpoints (Upstash Ratelimit)
 
 ### Phase 3 — More formats (2–3 weeks)
-- [ ] Double elimination (winners and losers brackets, grand final with optional reset)
-- [ ] Swiss (pairing by record, avoid rematches, Buchholz tiebreak)
+- [x] Double elimination (winners and losers brackets, grand final with bracket reset)
+- [x] Swiss (pairing by record, avoid rematches, Buchholz tiebreak)
 - [ ] Group stage → playoffs (round-robin groups feed a single-elim bracket)
 - [ ] Best-of-N matches (Bo3/Bo5, per-game scores)
 - [ ] Third-place match option

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
-import { generateRoundRobin, generateSingleElimination } from "@/lib/bracket";
+import { generateInitialMatches } from "@/lib/report";
 
 // Generates the bracket and moves the tournament from DRAFT to IN_PROGRESS.
 export async function POST(_req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -16,8 +16,7 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
     return NextResponse.json({ error: "Tournament already started" }, { status: 409 });
   }
 
-  const ids = tournament.participants.map((p) => p.id);
-  const planned = tournament.format === "ROUND_ROBIN" ? generateRoundRobin(ids) : generateSingleElimination(ids);
+  const planned = generateInitialMatches(tournament.format, tournament.participants.map((p) => p.id));
 
   await db.$transaction([
     db.match.createMany({ data: planned.map((m) => ({ ...m, tournamentId: id })) }),

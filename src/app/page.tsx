@@ -3,12 +3,12 @@ import { LaurelMark } from "@/components/LaurelMark";
 
 const features = [
   {
-    title: "Single elimination",
-    body: "Proper seeding with automatic byes, so top seeds never meet early.",
+    title: "Four formats",
+    body: "Single and double elimination, round robin and Swiss, with live standings.",
   },
   {
-    title: "Round robin",
-    body: "Everyone plays everyone. Fixtures are generated round by round.",
+    title: "Smart seeding",
+    body: "Top seeds are kept apart and byes are handled automatically.",
   },
   {
     title: "Auto-advance",

@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { getDb } from "@/lib/db";
+import { EngineError } from "@/lib/engine";
+import { reportResult } from "@/lib/report";
 import { reportScoreSchema } from "@/lib/validation";
 
-// Report a score: records the winner and advances them to the next match.
+// Report a score. The engine works out who advances (and any new matches);
+// this route loads the tournament and saves the result in one transaction.
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const db = getDb();
   const { id } = await params;
@@ -12,37 +16,59 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
   }
   const { score1, score2 } = parsed.data;
 
-  const match = await db.match.findUnique({ where: { id } });
-  if (!match) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (match.status !== "READY" || !match.participant1Id || !match.participant2Id) {
-    return NextResponse.json({ error: "Match is not ready to be reported" }, { status: 409 });
+  try {
+    const winnerId = await db.$transaction(
+      async (tx) => {
+        const match = await tx.match.findUnique({ where: { id }, select: { tournamentId: true } });
+        if (!match) throw new EngineError("Not found");
+
+        const tournament = await tx.tournament.findUniqueOrThrow({
+          where: { id: match.tournamentId },
+          include: { participants: { orderBy: { seed: "asc" }, select: { id: true } }, matches: true },
+        });
+
+        const result = reportResult({
+          format: tournament.format,
+          participantIds: tournament.participants.map((p) => p.id),
+          matches: tournament.matches,
+          matchId: id,
+          score1,
+          score2,
+        });
+
+        for (const m of result.updated) {
+          await tx.match.update({
+            where: { id: m.id },
+            data: {
+              participant1Id: m.participant1Id,
+              participant2Id: m.participant2Id,
+              score1: m.score1,
+              score2: m.score2,
+              winnerId: m.winnerId,
+              status: m.status,
+            },
+          });
+        }
+        if (result.created.length > 0) {
+          await tx.match.createMany({ data: result.created.map((m) => ({ ...m, tournamentId: tournament.id })) });
+        }
+        if (result.tournamentCompleted) {
+          await tx.tournament.update({ where: { id: tournament.id }, data: { status: "COMPLETED" } });
+        }
+        return result.winnerId;
+      },
+      // Serializable: two people reporting at once can't both advance players from stale data.
+      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
+    );
+    return NextResponse.json({ ok: true, winnerId });
+  } catch (err) {
+    if (err instanceof EngineError) {
+      const status = err.message === "Not found" ? 404 : 409;
+      return NextResponse.json({ error: err.message }, { status });
+    }
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2034") {
+      return NextResponse.json({ error: "Someone else just reported a score. Please try again." }, { status: 409 });
+    }
+    throw err;
   }
-
-  const winnerId = score1 > score2 ? match.participant1Id : match.participant2Id;
-
-  await db.$transaction(async (tx) => {
-    await tx.match.update({
-      where: { id },
-      data: { score1, score2, winnerId, status: "COMPLETED" },
-    });
-
-    if (match.nextMatchId) {
-      const next = await tx.match.update({
-        where: { id: match.nextMatchId },
-        data: match.nextMatchSlot === 1 ? { participant1Id: winnerId } : { participant2Id: winnerId },
-      });
-      if (next.participant1Id && next.participant2Id) {
-        await tx.match.update({ where: { id: next.id }, data: { status: "READY" } });
-      }
-    }
-
-    const remaining = await tx.match.count({
-      where: { tournamentId: match.tournamentId, status: { not: "COMPLETED" } },
-    });
-    if (remaining === 0) {
-      await tx.tournament.update({ where: { id: match.tournamentId }, data: { status: "COMPLETED" } });
-    }
-  });
-
-  return NextResponse.json({ ok: true, winnerId });
 }
