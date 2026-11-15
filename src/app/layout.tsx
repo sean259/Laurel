@@ -27,9 +27,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </Link>
             <Link
               href="/tournaments/new"
-              className="ml-auto rounded-full bg-zinc-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-zinc-700"
+              className="ml-auto whitespace-nowrap rounded-full bg-zinc-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-zinc-700"
             >
-              New tournament
+              <span className="sm:hidden">+ New</span>
+              <span className="hidden sm:inline">New tournament</span>
             </Link>
           </nav>
         </header>

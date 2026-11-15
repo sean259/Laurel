@@ -4,3 +4,56 @@
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-fraunces), Georgia, serif;
 }
+
+/*
+ * Bracket connector lines.
+ * Each round is a column of equal-height cells; a match sits centered in its cell, so the
+ * match it feeds into (next column) is centered between each pair. Lines are drawn in the gap.
+ */
+.bk {
+  --bk-gap: 2.5rem;
+  --bk-line: var(--color-zinc-300);
+  display: flex;
+  gap: var(--bk-gap);
+}
+.bk-cells {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+.bk-cell {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+.bk-has-next .bk-cell::after {
+  content: "";
+  position: absolute;
+  right: calc(var(--bk-gap) / -2);
+  width: calc(var(--bk-gap) / 2);
+  height: 50%;
+  border-color: var(--bk-line);
+  border-style: solid;
+  border-width: 0;
+  border-right-width: 1.5px;
+}
+.bk-has-next .bk-cell:nth-child(odd)::after {
+  top: 50%;
+  border-top-width: 1.5px;
+  border-top-right-radius: 6px;
+}
+.bk-has-next .bk-cell:nth-child(even)::after {
+  bottom: 50%;
+  border-bottom-width: 1.5px;
+  border-bottom-right-radius: 6px;
+}
+.bk-has-prev .bk-cell::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: calc(var(--bk-gap) / -2);
+  width: calc(var(--bk-gap) / 2);
+  border-top: 1.5px solid var(--bk-line);
+}
