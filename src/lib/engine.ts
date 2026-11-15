@@ -85,6 +85,30 @@ export class MatchSet {
     }
   }
 
+  /**
+   * Take a participant back out of a match slot (the reverse of `place`).
+   * Auto-resolved byes are unwound too. Refuses if a real match downstream was already played.
+   */
+  unplace(matchId: string, slot: number) {
+    const m = this.get(matchId);
+    if (m.status === "COMPLETED" && !m.bye) {
+      throw new EngineError("A later match has already been played. Undo that result first.");
+    }
+    if (slot === 1) m.participant1Id = null;
+    else m.participant2Id = null;
+    this.changed.add(m.id);
+
+    if (m.bye) {
+      if (m.status === "COMPLETED") {
+        m.winnerId = null;
+        m.status = "PENDING";
+        if (m.nextMatchId && m.nextMatchSlot) this.unplace(m.nextMatchId, m.nextMatchSlot);
+      }
+    } else {
+      m.status = "PENDING";
+    }
+  }
+
   all(): EngineMatch[] {
     return [...this.byId.values()];
   }

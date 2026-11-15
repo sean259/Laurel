@@ -1,0 +1,43 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { getDb } from "@/lib/db";
+import { DangerZone } from "@/components/DangerZone";
+import { TournamentForm } from "@/components/TournamentForm";
+
+export const dynamic = "force-dynamic";
+
+export default async function EditTournamentPage({ params }: { params: Promise<{ id: string }> }) {
+  const db = getDb();
+  const { id } = await params;
+  const t = await db.tournament.findUnique({
+    where: { id },
+    include: { participants: { orderBy: { seed: "asc" }, select: { name: true } } },
+  });
+  if (!t) notFound();
+  const started = t.status !== "DRAFT";
+
+  return (
+    <div className="mx-auto max-w-2xl">
+      <Link href={`/tournaments/${t.id}`} className="text-sm text-zinc-500 hover:text-zinc-900">
+        ← Back to tournament
+      </Link>
+      <h1 className="mt-3 font-display text-4xl font-semibold">Edit tournament</h1>
+      <p className="mt-2 mb-8 text-zinc-600">
+        {started
+          ? "The bracket is already running, so only names can change here."
+          : "Change anything you like before you start."}
+      </p>
+      <TournamentForm
+        tournament={{
+          id: t.id,
+          name: t.name,
+          game: t.game,
+          format: t.format,
+          started,
+          participants: t.participants.map((p) => p.name),
+        }}
+      />
+      <DangerZone id={t.id} name={t.name} started={started} />
+    </div>
+  );
+}

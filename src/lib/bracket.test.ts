@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { seedOrder } from "./bracket";
 import type { EngineMatch, Format } from "./engine";
-import { generateInitialMatches, reportResult } from "./report";
+import { applyChanges, generateInitialMatches, reportResult, submitScore, undoResult } from "./report";
 import { computeStandings, findChampion } from "./standings";
 import { swissRoundCount } from "./swiss";
 
@@ -140,5 +140,88 @@ describe("swiss", () => {
     const { matches } = simulate("SWISS", 7);
     const byes = matches.filter((m) => m.bye).map((m) => m.winnerId);
     expect(new Set(byes).size).toBe(byes.length);
+  });
+});
+
+// ---------- Undo and corrections ----------
+
+/** Comparable view of a bracket, independent of generated ids. */
+function snapshot(ms: EngineMatch[]) {
+  return ms
+    .map((m) => ({
+      key: `${m.bracket}:${m.round}:${m.position}`,
+      p1: m.participant1Id,
+      p2: m.participant2Id,
+      s: [m.score1, m.score2],
+      w: m.winnerId,
+      st: m.status,
+    }))
+    .sort((a, b) => a.key.localeCompare(b.key));
+}
+
+describe("undo", () => {
+  const formats: Format[] = ["SINGLE_ELIMINATION", "DOUBLE_ELIMINATION", "ROUND_ROBIN", "SWISS"];
+  it.each(formats.flatMap((f) => [3, 5, 8, 13].map((n) => [f, n] as const)))(
+    "%s %i players: undoing every result in reverse restores each earlier state",
+    (format, n) => {
+      const ids = players(n);
+      const rand = rng(n * 7);
+      let ms = generateInitialMatches(format, ids);
+      const history: { before: ReturnType<typeof snapshot>; key: string }[] = [];
+
+      for (;;) {
+        const ready = ms.filter((m) => m.status === "READY");
+        if (!ready.length) break;
+        const m = ready[Math.floor(rand() * ready.length)];
+        history.push({ before: snapshot(ms), key: `${m.bracket}:${m.round}:${m.position}` });
+        const p1 = rand() < 0.5;
+        ms = applyChanges(ms, submitScore({ format, participantIds: ids, matches: ms, matchId: m.id, score1: p1 ? 2 : 0, score2: p1 ? 0 : 2 }));
+      }
+      expect(findChampion(format, ids, ms)).toBeTruthy();
+
+      for (const step of history.reverse()) {
+        const m = ms.find((x) => `${x.bracket}:${x.round}:${x.position}` === step.key)!;
+        ms = applyChanges(ms, undoResult({ format, participantIds: ids, matches: ms, matchId: m.id }));
+        expect(snapshot(ms)).toEqual(step.before);
+      }
+    },
+  );
+
+  it("refuses when a later match depends on the result", () => {
+    const ids = players(4);
+    let ms = generateInitialMatches("SINGLE_ELIMINATION", ids);
+    const [a, b] = ms.filter((m) => m.round === 1);
+    for (const m of [a, b]) {
+      ms = applyChanges(ms, submitScore({ format: "SINGLE_ELIMINATION", participantIds: ids, matches: ms, matchId: m.id, score1: 1, score2: 0 }));
+    }
+    const final = ms.find((m) => m.round === 2)!;
+    ms = applyChanges(ms, submitScore({ format: "SINGLE_ELIMINATION", participantIds: ids, matches: ms, matchId: final.id, score1: 1, score2: 0 }));
+    expect(() => undoResult({ format: "SINGLE_ELIMINATION", participantIds: ids, matches: ms, matchId: a.id })).toThrow(/later match/);
+  });
+});
+
+describe("score corrections", () => {
+  const ids = players(4);
+  const start = () => generateInitialMatches("SINGLE_ELIMINATION", ids);
+  const score = (ms: EngineMatch[], id: string, s1: number, s2: number) =>
+    applyChanges(ms, submitScore({ format: "SINGLE_ELIMINATION", participantIds: ids, matches: ms, matchId: id, score1: s1, score2: s2 }));
+
+  it("same winner: only the score changes", () => {
+    let ms = start();
+    const m = ms.find((x) => x.round === 1)!;
+    ms = score(ms, m.id, 2, 1);
+    ms = score(ms, m.id, 5, 0);
+    const after = ms.find((x) => x.id === m.id)!;
+    expect([after.score1, after.score2, after.winnerId]).toEqual([5, 0, m.participant1Id]);
+  });
+
+  it("new winner: the right player moves on instead", () => {
+    let ms = start();
+    const m = ms.find((x) => x.round === 1)!;
+    ms = score(ms, m.id, 2, 1);
+    ms = score(ms, m.id, 0, 3);
+    const final = ms.find((x) => x.round === 2)!;
+    expect([final.participant1Id, final.participant2Id]).toContain(m.participant2Id);
+    expect([final.participant1Id, final.participant2Id]).not.toContain(m.participant1Id);
   });
 });

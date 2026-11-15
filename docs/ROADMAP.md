@@ -83,7 +83,7 @@ Browser ──fetch──▶ /api/... route ──Zod validate──▶ Prisma t
 | `/tournaments/new` | Create form | ✅ skeleton |
 | `/tournaments/[id]` | Bracket view + score reporting | ✅ skeleton |
 | `/dashboard` | My tournaments | Phase 2 |
-| `/tournaments/[id]/settings` | Edit, reseed, delete | Phase 2 |
+| `/tournaments/[id]/edit` | Edit, rename players, reset, delete | ✅ |
 | `/tournaments/[id]/join` | Self-registration link | Phase 2 |
 | `/u/[username]` | Player profile + history | Phase 5 |
 
@@ -94,9 +94,10 @@ Browser ──fetch──▶ /api/... route ──Zod validate──▶ Prisma t
 | GET/POST | `/api/tournaments` | List / create | ✅ |
 | POST | `/api/tournaments/[id]/start` | Generate bracket | ✅ |
 | PATCH | `/api/matches/[id]` | Report score, advance winner | ✅ |
-| PATCH/DELETE | `/api/tournaments/[id]` | Edit / delete | Phase 2 |
+| PATCH/DELETE | `/api/tournaments/[id]` | Edit / delete | ✅ |
 | POST/DELETE | `/api/tournaments/[id]/participants` | Add / remove / reseed | Phase 2 |
-| POST | `/api/matches/[id]/undo` | Correct a wrong score | Phase 2 |
+| POST | `/api/matches/[id]/undo` | Undo a result (PATCH on a finished match corrects it) | ✅ |
+| POST | `/api/tournaments/[id]/reset` | Back to draft, delete bracket | ✅ |
 
 ---
 
@@ -116,16 +117,16 @@ Browser ──fetch──▶ /api/... route ──Zod validate──▶ Prisma t
 - [x] Report scores, auto-advance winners, finish tournament
 - [x] Round-robin **standings table** (W/L, score difference, tiebreakers)
 - [x] Unit tests (Vitest): every format simulated end to end for 2–64 players (`npm test`)
-- [ ] Shuffle-seeds option
-- [ ] Loading / error / 404 pages
-- [ ] **Deploy to Cloudflare + Neon** (deploy early; it stays easy)
+- [x] Shuffle-seeds option
+- [x] Loading / error / 404 pages
+- [x] **Deploy to Cloudflare + Neon**: live at https://laurel.seanlorico9.workers.dev
 
 ### Phase 2 — Accounts & ownership (1–2 weeks)
 - [ ] Auth.js sign-in (Google + Discord)
 - [ ] Only the tournament owner can start it or report scores
 - [ ] Dashboard of "my tournaments"
-- [ ] Edit / delete tournaments; add/remove/reorder participants while in DRAFT
-- [ ] Undo or correct a reported score (clear downstream matches)
+- [x] Edit / delete tournaments; add/remove/reorder participants while in DRAFT (rename any time); reset to draft
+- [x] Undo or correct a reported score (refuses if a later match already depends on it)
 - [ ] Public vs. unlisted vs. private visibility
 - [ ] Registration link: players join themselves, with an optional cap and close date
 - [ ] Rate limiting on write endpoints (Upstash Ratelimit)

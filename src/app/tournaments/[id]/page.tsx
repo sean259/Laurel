@@ -56,7 +56,15 @@ export default async function TournamentPage({ params }: { params: Promise<{ id:
               {progress && status === "IN_PROGRESS" && <span className="text-xs text-zinc-400">{progress}</span>}
             </div>
           </div>
-          {status === "DRAFT" && <StartButton tournamentId={tournament.id} />}
+          <div className="flex items-start gap-2">
+            <Link
+              href={`/tournaments/${tournament.id}/edit`}
+              className="rounded-full border border-white/20 px-5 py-2.5 text-sm font-medium hover:bg-white/10"
+            >
+              Edit
+            </Link>
+            {status === "DRAFT" && <StartButton tournamentId={tournament.id} />}
+          </div>
         </div>
 
         {champion && (
@@ -94,6 +102,9 @@ export default async function TournamentPage({ params }: { params: Promise<{ id:
             </section>
           )}
           <Bracket matches={matches} names={names} format={format} />
+          {played > 0 && (
+            <p className="-mt-6 text-sm text-zinc-500">Tip: click a finished match to correct or undo its result.</p>
+          )}
         </>
       )}
     </div>
