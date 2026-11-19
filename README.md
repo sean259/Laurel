@@ -2,7 +2,7 @@
 
 *Where champions are crowned.*
 
-Create tournaments, generate brackets (single elimination, round robin) and report scores.
+Create tournaments (single or double elimination, round robin, Swiss), let players sign up with a link, mix them into random teams, and report scores.
 
 **Stack:** Next.js 15 · TypeScript · Tailwind · Prisma · PostgreSQL (Neon). Deploys to Cloudflare Workers via OpenNext.
 

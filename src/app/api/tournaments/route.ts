@@ -17,15 +17,21 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid input" }, { status: 400 });
   }
-  const { name, game, format, participants } = parsed.data;
+  const { name, game, format, teamSize, registrationOpen, participants } = parsed.data;
+  const teams = teamSize > 1;
 
   const tournament = await db.tournament.create({
     data: {
       name,
       game,
       format,
+      teamSize,
+      registrationOpen,
       ownerId,
-      participants: { create: participants.map((p, i) => ({ name: p, seed: i + 1 })) },
+      // Solo: players are the bracket entries. Teams: players wait in the pool to be mixed.
+      ...(teams
+        ? { players: { create: participants.map((p) => ({ name: p })) } }
+        : { participants: { create: participants.map((p, i) => ({ name: p, seed: i + 1 })) } }),
     },
   });
 

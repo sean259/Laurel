@@ -14,7 +14,7 @@ export default async function TournamentsPage() {
   const userId = await currentUserId();
   const tournaments = await db.tournament.findMany({
     orderBy: { createdAt: "desc" },
-    include: { _count: { select: { participants: true } } },
+    include: { _count: { select: { participants: true, players: true } } },
     take: 50,
   });
 
@@ -63,7 +63,8 @@ export default async function TournamentsPage() {
                 <div className="mt-auto flex items-center justify-between pt-6 text-xs text-zinc-500">
                   <span className="rounded-full border border-zinc-200 px-2.5 py-0.5">{formatLabel(t.format)}</span>
                   <span>
-                    {t._count.participants} players · {dateFmt.format(t.createdAt)}
+                    {t.teamSize > 1 ? `${t.teamSize}v${t.teamSize} · ${t._count.players}` : t._count.participants} players ·{" "}
+                    {dateFmt.format(t.createdAt)}
                   </span>
                 </div>
               </Link>

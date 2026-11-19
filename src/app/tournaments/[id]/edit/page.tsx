@@ -12,7 +12,10 @@ export default async function EditTournamentPage({ params }: { params: Promise<{
   const { id } = await params;
   const t = await db.tournament.findUnique({
     where: { id },
-    include: { participants: { orderBy: { seed: "asc" }, select: { name: true } } },
+    include: {
+      participants: { orderBy: { seed: "asc" }, select: { name: true } },
+      players: { orderBy: { createdAt: "asc" }, select: { name: true } },
+    },
   });
   if (!t) notFound();
   // Only the organizer can edit; everyone else just sees the tournament.
@@ -36,8 +39,11 @@ export default async function EditTournamentPage({ params }: { params: Promise<{
           name: t.name,
           game: t.game,
           format: t.format,
+          teamSize: t.teamSize,
+          registrationOpen: t.registrationOpen,
           started,
-          participants: t.participants.map((p) => p.name),
+          // Draft team tournaments edit the player pool; otherwise the bracket entries.
+          participants: (!started && t.teamSize > 1 ? t.players : t.participants).map((p) => p.name),
         }}
       />
       <DangerZone id={t.id} name={t.name} started={started} />

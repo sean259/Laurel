@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider  = "postgresql"
   url       = env("DATABASE_URL") // pooled: used by the app
   directUrl = env("DATABASE_URL_UNPOOLED") // direct: used by db push / migrations
 }
@@ -37,17 +37,23 @@ enum MatchStatus {
 }
 
 model Tournament {
-  id           String           @id @default(cuid())
-  name         String
-  game         String?
-  format       TournamentFormat @default(SINGLE_ELIMINATION)
-  status       TournamentStatus @default(DRAFT)
+  id               String           @id @default(cuid())
+  name             String
+  game             String?
+  format           TournamentFormat @default(SINGLE_ELIMINATION)
+  status           TournamentStatus @default(DRAFT)
   // Neon Auth user id (neon_auth schema). Only the owner can manage the tournament.
-  ownerId      String?
-  participants Participant[]
-  matches      Match[]
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
+  ownerId          String?
+  // 1 = solo (each player is a bracket entry); 2+ = players are mixed into random teams
+  teamSize         Int              @default(1)
+  // Anyone with the link can add themselves while this is on (DRAFT only)
+  registrationOpen Boolean          @default(false)
+  participants     Participant[]
+  // Team tournaments only: the pool of players that gets mixed into teams
+  players          Player[]
+  matches          Match[]
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 
   @@index([ownerId])
 }
@@ -56,27 +62,40 @@ model Participant {
   id           String     @id @default(cuid())
   name         String
   seed         Int
+  // Team tournaments: the players on this team
+  members      String[]   @default([])
   tournamentId String
   tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
 
   @@unique([tournamentId, seed])
 }
 
+// A player in a team tournament's pool, before (and after) being mixed into teams.
+model Player {
+  id           String     @id @default(cuid())
+  name         String
+  tournamentId String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@index([tournamentId])
+}
+
 model Match {
-  id             String      @id @default(cuid())
-  tournamentId   String
-  tournament     Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  bracket        MatchBracket @default(WINNERS)
-  round          Int
-  position       Int
-  participant1Id String?
-  participant2Id String?
-  score1         Int?
-  score2         Int?
-  winnerId       String?
-  status         MatchStatus @default(PENDING)
+  id                 String       @id @default(cuid())
+  tournamentId       String
+  tournament         Tournament   @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  bracket            MatchBracket @default(WINNERS)
+  round              Int
+  position           Int
+  participant1Id     String?
+  participant2Id     String?
+  score1             Int?
+  score2             Int?
+  winnerId           String?
+  status             MatchStatus  @default(PENDING)
   // A bye: one slot will never be filled, so whoever arrives advances automatically
-  bye                Boolean @default(false)
+  bye                Boolean      @default(false)
   // Elimination brackets: where the winner (and, in double elimination, the loser) goes next
   nextMatchId        String?
   nextMatchSlot      Int? // 1 or 2

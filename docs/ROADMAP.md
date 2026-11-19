@@ -128,7 +128,8 @@ Browser ──fetch──▶ /api/... route ──Zod validate──▶ Prisma t
 - [x] Edit / delete tournaments; add/remove/reorder participants while in DRAFT (rename any time); reset to draft
 - [x] Undo or correct a reported score (refuses if a later match already depends on it)
 - [ ] Public vs. unlisted vs. private visibility
-- [ ] Registration link: players join themselves, with an optional cap and close date
+- [x] Registration link: players join themselves with just a name (organizer opens/closes it)
+- [ ] Registration cap and close date
 - [ ] Rate limiting on write endpoints (Upstash Ratelimit)
 
 ### Phase 3 — More formats (2–3 weeks)
@@ -149,7 +150,8 @@ Browser ──fetch──▶ /api/... route ──Zod validate──▶ Prisma t
 
 ### Phase 5 — Community & polish (ongoing)
 - [ ] Player profiles and match history
-- [ ] Teams (roster of users as one participant)
+- [x] Random teams: set players per team (2–10), organizer mixes the sign-ups into teams
+- [ ] Fixed teams (roster of users as one participant)
 - [ ] Organizations / co-organizers with roles
 - [ ] Search and filter public tournaments by game
 - [ ] Dark mode, mobile-first bracket view, accessibility pass

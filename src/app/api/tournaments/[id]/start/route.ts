@@ -18,12 +18,17 @@ export async function POST(_req: Request, { params }: { params: Promise<{ id: st
   if (tournament.status !== "DRAFT") {
     return NextResponse.json({ error: "Tournament already started" }, { status: 409 });
   }
+  if (tournament.participants.length < 2) {
+    const error = tournament.teamSize > 1 ? "Mix the players into teams first" : "Need at least 2 players to start";
+    return NextResponse.json({ error }, { status: 409 });
+  }
 
   const planned = generateInitialMatches(tournament.format, tournament.participants.map((p) => p.id));
 
   await db.$transaction([
     db.match.createMany({ data: planned.map((m) => ({ ...m, tournamentId: id })) }),
-    db.tournament.update({ where: { id }, data: { status: "IN_PROGRESS" } }),
+    // Sign-ups close once the bracket exists.
+    db.tournament.update({ where: { id }, data: { status: "IN_PROGRESS", registrationOpen: false } }),
   ]);
 
   return NextResponse.json({ ok: true });
