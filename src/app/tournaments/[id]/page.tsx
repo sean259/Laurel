@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getDb } from "@/lib/db";
 import { currentUserId } from "@/lib/access";
@@ -7,13 +6,17 @@ import { computeStandings, findChampion } from "@/lib/standings";
 import { swissRoundCount } from "@/lib/swiss";
 import { teamCount } from "@/lib/teams";
 import { minPlayers } from "@/lib/validation";
-import { Bracket } from "@/components/Bracket";
-import { LaurelMark } from "@/components/LaurelMark";
-import { MixTeamsButton } from "@/components/MixTeamsButton";
-import { RegistrationPanel } from "@/components/RegistrationPanel";
-import { Standings } from "@/components/Standings";
-import { StartButton } from "@/components/StartButton";
-import { StatusBadge } from "@/components/StatusBadge";
+import { ButtonLink } from "@/components/atoms/Button";
+import { Card } from "@/components/atoms/Card";
+import { ActionButton } from "@/components/molecules/ActionButton";
+import { EmptyState } from "@/components/molecules/EmptyState";
+import { SectionHeading } from "@/components/molecules/SectionHeading";
+import { Bracket } from "@/components/organisms/Bracket";
+import { RegistrationPanel } from "@/components/organisms/RegistrationPanel";
+import { PlayerPool, SeedList, TeamGrid } from "@/components/organisms/Roster";
+import { SetupChecklist, type SetupStep } from "@/components/organisms/SetupChecklist";
+import { Standings } from "@/components/organisms/Standings";
+import { TournamentHero } from "@/components/organisms/TournamentHero";
 
 export const dynamic = "force-dynamic";
 
@@ -31,162 +34,159 @@ export default async function TournamentPage({ params }: { params: Promise<{ id:
   if (!tournament) notFound();
   const canManage = tournament.ownerId !== null && tournament.ownerId === (await currentUserId());
 
-  const { format, matches, status, teamSize, players } = tournament;
+  const { format, matches, status, teamSize, players, participants } = tournament;
   const teams = teamSize > 1;
-  const playerCount = teams ? players.length : tournament.participants.length;
-  const canStart = tournament.participants.length >= 2;
-  const ids = tournament.participants.map((p) => p.id);
-  const names = Object.fromEntries(tournament.participants.map((p) => [p.id, p.name]));
+  const mixed = teams && participants.length > 0;
+  const playerCount = teams ? players.length : participants.length;
+  const needed = minPlayers(teamSize);
+  const canStart = participants.length >= 2;
+  const ids = participants.map((p) => p.id);
+  const names = Object.fromEntries(participants.map((p) => [p.id, p.name]));
   const champion = status === "COMPLETED" ? findChampion(format, ids, matches) : null;
   const hasStandings = format === "ROUND_ROBIN" || format === "SWISS";
+  const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
 
   const played = matches.filter((m) => m.status === "COMPLETED" && !m.bye).length;
   const total = matches.filter((m) => !m.bye).length;
-  let progress = total > 0 ? `${played} of ${total} matches played` : null;
-  if (format === "SWISS" && matches.length > 0) {
-    progress = `Round ${Math.max(...matches.map((m) => m.round))} of ${swissRoundCount(ids.length)}`;
+  let progress: { value: number; label: string } | null = null;
+  if (status === "IN_PROGRESS" && total > 0) {
+    if (format === "SWISS") {
+      // Swiss rounds are generated one at a time, so measure finished rounds plus the share of the current one.
+      const rounds = swissRoundCount(ids.length);
+      const round = Math.max(...matches.map((m) => m.round));
+      const current = matches.filter((m) => m.round === round && !m.bye);
+      const currentDone = current.filter((m) => m.status === "COMPLETED").length;
+      const share = current.length > 0 ? currentDone / current.length : 0;
+      progress = { value: Math.min(1, (round - 1 + share) / rounds), label: `Round ${round} of ${rounds}` };
+    } else {
+      progress = { value: played / total, label: `${played} of ${total} ${total === 1 ? "match" : "matches"} played` };
+    }
   }
+
+  const facts = [
+    formatLabel(format),
+    tournament.game ?? "Any game",
+    teams ? `${teamSize}v${teamSize}` : "Solo",
+    plural(playerCount, "player") + (mixed ? ` · ${plural(participants.length, "team")}` : ""),
+  ];
+
+  const startButton = (
+    <ActionButton url={`/api/tournaments/${tournament.id}/start`} label="Start tournament" busyLabel="Generating bracket…" variant="accent" align="start" />
+  );
+  const editLink = (label: string) => (
+    <ButtonLink href={`/tournaments/${tournament.id}/edit`} variant="secondary" size="sm">
+      {label}
+    </ButtonLink>
+  );
+
+  const steps: SetupStep[] = teams
+    ? [
+        {
+          label: `Gather at least ${needed} players`,
+          detail: `${plural(players.length, "player")} so far${tournament.registrationOpen ? ", sign-ups are open" : ""}.`,
+          done: players.length >= needed,
+          action: tournament.registrationOpen ? undefined : editLink("Add players"),
+        },
+        {
+          label: "Mix players into random teams",
+          detail: mixed ? `${plural(participants.length, "team")} of ${teamSize}.` : `Makes ${teamCount(players.length, teamSize)} teams of ${teamSize}.`,
+          done: mixed,
+          action: <ActionButton url={`/api/tournaments/${tournament.id}/teams`} label="Mix teams" busyLabel="Mixing…" align="start" />,
+        },
+        { label: "Start the tournament", detail: "Sign-ups close and the bracket is generated.", done: false, action: startButton },
+      ]
+    : [
+        {
+          label: "Add at least 2 players",
+          detail: `${plural(participants.length, "player")} so far${tournament.registrationOpen ? ", sign-ups are open" : ""}.`,
+          done: canStart,
+          action: tournament.registrationOpen ? undefined : editLink("Add players"),
+        },
+        {
+          label: "Start the tournament",
+          detail: `Sign-ups close and the ${formatLabel(format).toLowerCase()} bracket is generated.`,
+          done: false,
+          action: startButton,
+        },
+      ];
 
   return (
     <div className="space-y-10">
-      {/* Header */}
-      <section className="relative overflow-hidden rounded-3xl bg-zinc-950 px-6 py-8 text-white sm:px-10 sm:py-10">
-        <div aria-hidden className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-amber-500/20 blur-3xl" />
-        <div className="relative flex flex-wrap items-start justify-between gap-6">
-          <div>
-            <Link href="/tournaments" className="text-sm text-zinc-400 hover:text-white">
-              ← All tournaments
-            </Link>
-            <h1 className="mt-3 font-display text-4xl font-semibold sm:text-5xl">{tournament.name}</h1>
-            <div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-zinc-300">
-              <StatusBadge status={status} />
-              <span className="rounded-full border border-white/15 px-2.5 py-0.5 text-xs">{formatLabel(format)}</span>
-              <span className="rounded-full border border-white/15 px-2.5 py-0.5 text-xs">{tournament.game ?? "Any game"}</span>
-              <span className="rounded-full border border-white/15 px-2.5 py-0.5 text-xs">
-                {teams ? `${teamSize}v${teamSize} · ` : ""}
-                {playerCount} {playerCount === 1 ? "player" : "players"}
-                {teams && ids.length > 0 && ` · ${ids.length} teams`}
-              </span>
-              {progress && status === "IN_PROGRESS" && <span className="text-xs text-zinc-400">{progress}</span>}
-            </div>
-          </div>
-          {canManage && (
-            <div className="flex items-start gap-2">
-              <Link
-                href={`/tournaments/${tournament.id}/edit`}
-                className="rounded-full border border-white/20 px-5 py-2.5 text-sm font-medium hover:bg-white/10"
-              >
-                Edit
-              </Link>
-              {status === "DRAFT" && canStart && <StartButton tournamentId={tournament.id} />}
-            </div>
-          )}
-        </div>
-
-        {champion && (
-          <div className="relative mt-8 flex items-center gap-4 rounded-2xl border border-amber-400/40 bg-amber-400/10 px-5 py-4">
-            <LaurelMark className="h-10 w-10 shrink-0 text-amber-400" />
-            <div>
-              <p className="text-xs uppercase tracking-widest text-amber-300">Champion</p>
-              <p className="font-display text-2xl font-semibold">{names[champion]}</p>
-            </div>
-          </div>
-        )}
-      </section>
+      <TournamentHero
+        name={tournament.name}
+        status={status}
+        facts={facts}
+        progress={progress}
+        champion={champion ? names[champion] : null}
+        actions={
+          canManage && (
+            <ButtonLink href={`/tournaments/${tournament.id}/edit`} variant="inverse">
+              Edit
+            </ButtonLink>
+          )
+        }
+      />
 
       {status === "DRAFT" ? (
         <>
-          {canManage && <RegistrationPanel tournamentId={tournament.id} open={tournament.registrationOpen} />}
+          {canManage && (
+            <div className="grid items-start gap-6 lg:grid-cols-2">
+              <SetupChecklist steps={steps} />
+              <RegistrationPanel tournamentId={tournament.id} open={tournament.registrationOpen} />
+            </div>
+          )}
           {!canManage && tournament.registrationOpen && (
-            <section className="flex flex-wrap items-center justify-between gap-4 rounded-3xl border border-amber-300 bg-amber-50 p-6">
+            <Card tone="accent" className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <h2 className="font-display text-xl font-semibold">Sign-ups are open</h2>
-                <p className="mt-1 text-sm text-zinc-600">Add your name to play in this tournament.</p>
+                <h2 className="font-display text-xl font-semibold text-ink">Sign-ups are open</h2>
+                <p className="mt-1 text-sm text-muted">Add your name to play in this tournament.</p>
               </div>
-              <Link
-                href={`/tournaments/${tournament.id}/join`}
-                className="rounded-full bg-amber-400 px-5 py-2.5 text-sm font-medium text-zinc-950 hover:bg-amber-300"
-              >
+              <ButtonLink href={`/tournaments/${tournament.id}/join`} variant="accent">
                 Join tournament
-              </Link>
-            </section>
+              </ButtonLink>
+            </Card>
           )}
 
           {teams ? (
             <>
               <section>
-                <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
-                  <div>
-                    <h2 className="font-display text-2xl font-semibold">Teams</h2>
-                    <p className="mt-1 text-sm text-zinc-500">
-                      {tournament.participants.length > 0
-                        ? `${tournament.participants.length} random teams of ${teamSize}. Numbers are seeds.`
-                        : players.length < minPlayers(teamSize)
-                          ? `Need at least ${minPlayers(teamSize)} players to make 2 teams of ${teamSize}. ${players.length} so far.`
-                          : canManage
-                            ? `Mix ${players.length} players into ${teamCount(players.length, teamSize)} random teams, then start.`
-                            : "The organizer hasn\u2019t mixed the teams yet."}
-                    </p>
-                  </div>
-                  {canManage && players.length >= minPlayers(teamSize) && (
-                    <MixTeamsButton tournamentId={tournament.id} mixed={tournament.participants.length > 0} />
-                  )}
-                </div>
-                {tournament.participants.length > 0 && (
-                  <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {tournament.participants.map((p) => (
-                      <li key={p.id} className="rounded-2xl border border-zinc-200 bg-white p-4">
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-xs tabular-nums text-zinc-400">{p.seed}</span>
-                          <span className="font-semibold">{p.name}</span>
-                        </div>
-                        <p className="mt-1.5 text-sm text-zinc-600">{p.members.join(", ")}</p>
-                      </li>
-                    ))}
-                  </ol>
-                )}
+                <SectionHeading
+                  title="Teams"
+                  count={mixed ? participants.length : undefined}
+                  description={
+                    mixed
+                      ? `Random teams of ${teamSize}. Numbers are seeds.`
+                      : players.length < needed
+                        ? `Teams appear here once there are at least ${needed} players and they're mixed.`
+                        : canManage
+                          ? "Mix the players to make teams."
+                          : "The organizer hasn’t mixed the teams yet."
+                  }
+                  actions={
+                    canManage && mixed && (
+                      <ActionButton url={`/api/tournaments/${tournament.id}/teams`} label="Re-mix teams" busyLabel="Mixing…" variant="secondary" />
+                    )
+                  }
+                />
+                {mixed && <TeamGrid teams={participants} />}
               </section>
               <section>
-                <h2 className="mb-4 font-display text-2xl font-semibold">
-                  Players <span className="text-base font-normal text-zinc-400">({players.length})</span>
-                </h2>
+                <SectionHeading title="Players" count={players.length} />
                 {players.length === 0 ? (
-                  <p className="text-sm text-zinc-500">No one has signed up yet.</p>
+                  <EmptyState compact title="No one has signed up yet" body={canManage ? "Share the sign-up link or add names in Edit." : undefined} />
                 ) : (
-                  <ul className="flex flex-wrap gap-2">
-                    {players.map((p) => (
-                      <li key={p.id} className="rounded-full border border-zinc-200 bg-white px-3 py-1 text-sm">
-                        {p.name}
-                      </li>
-                    ))}
-                  </ul>
+                  <PlayerPool players={players} />
                 )}
               </section>
             </>
           ) : (
             <section>
-              <h2 className="mb-4 font-display text-2xl font-semibold">Players</h2>
-              {tournament.participants.length === 0 ? (
-                <p className="text-sm text-zinc-500">No one has signed up yet.</p>
+              <SectionHeading title="Players" count={participants.length} description={participants.length > 0 ? "Numbers are seeds." : undefined} />
+              {participants.length === 0 ? (
+                <EmptyState compact title="No one has signed up yet" body={canManage ? "Share the sign-up link or add names in Edit." : undefined} />
               ) : (
-                <ol className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                  {tournament.participants.map((p) => (
-                    <li key={p.id} className="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-2.5">
-                      <span className="w-6 text-right text-xs tabular-nums text-zinc-400">{p.seed}</span>
-                      <span className="truncate font-medium">{p.name}</span>
-                    </li>
-                  ))}
-                </ol>
+                <SeedList entries={participants} />
               )}
-              <p className="mt-4 text-sm text-zinc-500">
-                Numbers are seeds.
-                {canManage &&
-                  (canStart ? (
-                    <> Start the tournament to generate the {formatLabel(format).toLowerCase()} bracket.</>
-                  ) : (
-                    <> You need at least 2 players to start.</>
-                  ))}
-              </p>
             </section>
           )}
         </>
@@ -194,25 +194,25 @@ export default async function TournamentPage({ params }: { params: Promise<{ id:
         <>
           {hasStandings && (
             <section>
-              <h2 className="mb-4 font-display text-2xl font-semibold">Standings</h2>
-              <Standings standings={computeStandings(ids, matches, format)} names={names} showBuchholz={format === "SWISS"} />
+              <SectionHeading title="Standings" />
+              <Standings
+                standings={computeStandings(ids, matches, format)}
+                names={names}
+                showBuchholz={format === "SWISS"}
+                entryLabel={teams ? "Team" : "Player"}
+              />
             </section>
           )}
-          <Bracket matches={matches} names={names} format={format} canManage={canManage} />
-          {canManage && played > 0 && (
-            <p className="-mt-6 text-sm text-zinc-500">Tip: click a finished match to correct or undo its result.</p>
-          )}
+          <div>
+            <Bracket matches={matches} names={names} format={format} canManage={canManage} />
+            {canManage && played > 0 && (
+              <p className="mt-3 text-sm text-subtle">Tip: click a finished match to correct or undo its result.</p>
+            )}
+          </div>
           {teams && (
             <section>
-              <h2 className="mb-4 font-display text-2xl font-semibold">Teams</h2>
-              <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {tournament.participants.map((p) => (
-                  <li key={p.id} className="rounded-2xl border border-zinc-200 bg-white p-4">
-                        <span className="font-semibold">{p.name}</span>
-                        <p className="mt-1.5 text-sm text-zinc-600">{p.members.join(", ")}</p>
-                      </li>
-                ))}
-              </ol>
+              <SectionHeading title="Teams" count={participants.length} />
+              <TeamGrid teams={participants} showSeeds={false} />
             </section>
           )}
         </>

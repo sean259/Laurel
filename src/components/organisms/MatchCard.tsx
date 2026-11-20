@@ -3,9 +3,11 @@
 import type { Match } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { Button } from "../atoms/Button";
+import { ErrorText } from "../atoms/Alert";
 
 const scoreInput =
-  "w-12 rounded-md border border-zinc-300 bg-white px-1.5 py-0.5 text-sm outline-none focus:border-amber-500";
+  "h-9 w-14 rounded-lg border border-line-strong bg-surface px-2 text-center text-sm tabular-nums text-ink outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/20";
 
 export function MatchCard({
   match,
@@ -23,10 +25,10 @@ export function MatchCard({
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const ready = match.status === "READY" && canManage;
+  const ready = match.status === "READY";
   const done = match.status === "COMPLETED";
   const editable = done && !match.bye && canManage;
-  const showForm = ready || editing;
+  const showForm = (ready && canManage) || editing;
 
   function startEditing() {
     setS1(String(match.score1 ?? ""));
@@ -65,13 +67,23 @@ export function MatchCard({
     const won = done && pid !== null && pid === match.winnerId;
     const lost = done && pid !== null && !won;
     return (
-      <div className={`flex items-center justify-between gap-2 px-3 py-2 text-sm ${won ? "bg-amber-50/70" : ""}`}>
+      <div className={`flex items-center justify-between gap-2 px-3 py-2 text-sm ${won ? "bg-accent-soft" : ""}`}>
         <span
-          className={`truncate ${won ? "font-semibold text-zinc-900" : lost ? "text-zinc-400" : pid ? "text-zinc-800" : "italic text-zinc-400"}`}
+          className={`flex min-w-0 items-center gap-1.5 ${
+            won ? "font-semibold text-ink" : lost ? "text-subtle" : pid ? "text-ink" : "italic text-subtle"
+          }`}
         >
-          {pid ? names[pid] : match.bye ? "Bye" : "TBD"}
+          <span className="truncate">{pid ? names[pid] : match.bye ? "Bye" : "TBD"}</span>
+          {won && (
+            <>
+              <svg aria-hidden viewBox="0 0 16 16" className="h-3.5 w-3.5 shrink-0 text-accent-ink" fill="currentColor">
+                <path d="M6.4 11.2 3.2 8l-1.1 1.1 4.3 4.3 8-8-1.1-1.1z" />
+              </svg>
+              <span className="sr-only">(winner)</span>
+            </>
+          )}
         </span>
-        <span className={`tabular-nums ${won ? "font-semibold text-amber-700" : "text-zinc-400"}`}>{score ?? ""}</span>
+        <span className={`tabular-nums ${won ? "font-semibold text-accent-ink" : "text-subtle"}`}>{score ?? ""}</span>
       </div>
     );
   };
@@ -79,23 +91,26 @@ export function MatchCard({
   const players = (
     <>
       {row(match.participant1Id, match.score1)}
-      <div className="border-t border-zinc-100" />
+      <div className="border-t border-line" />
       {row(match.participant2Id, match.score2)}
     </>
   );
 
+  const frame = match.bye
+    ? "border-dashed border-line bg-canvas"
+    : showForm || ready
+      ? "border-amber-400 bg-surface ring-4 ring-amber-400/15"
+      : "border-line bg-surface shadow-sm";
+
   return (
-    <div
-      className={`w-full overflow-hidden rounded-xl border bg-white text-left shadow-sm ${
-        showForm || (match.status === "READY" && !canManage) ? "border-amber-300 ring-4 ring-amber-400/10" : "border-zinc-200"
-      } ${match.bye ? "opacity-60" : ""}`}
-    >
+    <div className={`w-full overflow-hidden rounded-xl border text-left ${frame}`}>
       {editable && !editing ? (
         <button
           type="button"
           onClick={startEditing}
+          aria-label={`Edit result: ${names[match.participant1Id!]} ${match.score1}, ${names[match.participant2Id!]} ${match.score2}`}
           title="Edit or undo this result"
-          className="block w-full text-left transition hover:bg-zinc-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-amber-500"
+          className="block w-full text-left transition-colors hover:bg-canvas focus-visible:outline-offset-[-2px]"
         >
           {players}
         </button>
@@ -104,38 +119,39 @@ export function MatchCard({
       )}
 
       {showForm && (
-        <form onSubmit={save} className="border-t border-zinc-100 bg-zinc-50 px-2 py-1.5">
+        <form onSubmit={save} className="border-t border-line bg-canvas px-2.5 py-2">
           <div className="flex items-center gap-1.5">
             <input
               value={s1}
               onChange={(e) => setS1(e.target.value)}
               type="number"
+              inputMode="numeric"
               min={0}
               required
               autoFocus={editing}
               aria-label={`Score for ${names[match.participant1Id!]}`}
               className={scoreInput}
             />
-            <span className="text-zinc-400">–</span>
+            <span aria-hidden className="text-subtle">
+              –
+            </span>
             <input
               value={s2}
               onChange={(e) => setS2(e.target.value)}
               type="number"
+              inputMode="numeric"
               min={0}
               required
               aria-label={`Score for ${names[match.participant2Id!]}`}
               className={scoreInput}
             />
-            <button
-              disabled={busy}
-              className="ml-auto rounded-full bg-zinc-900 px-3 py-1 text-xs font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
-            >
-              {busy ? "…" : "Save"}
-            </button>
+            <Button type="submit" size="sm" disabled={busy} className="ml-auto">
+              {busy ? "Saving…" : "Save"}
+            </Button>
           </div>
           {editing && (
-            <div className="mt-1.5 flex items-center justify-between text-xs">
-              <button type="button" onClick={undo} disabled={busy} className="font-medium text-red-600 hover:text-red-800">
+            <div className="mt-2 flex items-center justify-between text-xs">
+              <button type="button" onClick={undo} disabled={busy} className="rounded font-medium text-danger hover:underline">
                 Undo result
               </button>
               <button
@@ -144,7 +160,7 @@ export function MatchCard({
                   setEditing(false);
                   setError(null);
                 }}
-                className="text-zinc-500 hover:text-zinc-900"
+                className="rounded font-medium text-muted hover:text-ink"
               >
                 Cancel
               </button>
@@ -152,7 +168,11 @@ export function MatchCard({
           )}
         </form>
       )}
-      {error && <p className="px-3 pb-2 pt-1 text-xs text-red-600">{error}</p>}
+      {error && (
+        <div className="px-3 pb-2 pt-1">
+          <ErrorText>{error}</ErrorText>
+        </div>
+      )}
     </div>
   );
 }

@@ -3,6 +3,52 @@
 @theme inline {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-fraunces), Georgia, serif;
+
+  /*
+   * Semantic color tokens. Components use these names (bg-canvas, text-muted, border-line…)
+   * instead of raw palette colors, so contrast is decided once, here.
+   * Contrast against white / canvas (WCAG AA needs 4.5:1 for body text):
+   *   ink 17:1 · muted 7.6:1 · subtle 4.8:1 · accent-ink 5.0:1 · danger 6.5:1
+   */
+  --color-canvas: var(--color-zinc-50);
+  --color-surface: #fff;
+  --color-surface-sunken: var(--color-zinc-100);
+  --color-line: var(--color-zinc-200);
+  --color-line-strong: var(--color-zinc-300);
+  --color-ink: var(--color-zinc-900);
+  --color-muted: var(--color-zinc-600);
+  --color-subtle: var(--color-zinc-500);
+  --color-inverse: var(--color-zinc-950);
+  --color-accent: var(--color-amber-400);
+  --color-accent-hover: var(--color-amber-300);
+  --color-accent-soft: var(--color-amber-50);
+  --color-accent-line: var(--color-amber-300);
+  --color-accent-ink: var(--color-amber-700);
+  --color-danger: var(--color-red-700);
+  --color-danger-soft: var(--color-red-50);
+  --color-danger-line: var(--color-red-200);
+  --color-success: var(--color-emerald-700);
+  --color-success-soft: var(--color-emerald-50);
+  --color-focus: var(--color-amber-600);
+}
+
+@layer base {
+  /* One visible focus ring for every interactive element (keyboard users only). */
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--color-amber-200);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
 
 /*
@@ -12,7 +58,7 @@
  */
 .bk {
   --bk-gap: 2.5rem;
-  --bk-line: var(--color-zinc-300);
+  --bk-line: var(--color-line-strong);
   display: flex;
   gap: var(--bk-gap);
 }

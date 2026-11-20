@@ -3,11 +3,11 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/lib/auth/client";
-
-const input =
-  "w-full rounded-xl border border-zinc-300 bg-white px-4 py-2.5 outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-400/15";
-const button =
-  "w-full rounded-full bg-zinc-900 px-5 py-2.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50";
+import { Alert } from "../atoms/Alert";
+import { Button } from "../atoms/Button";
+import { Input } from "../atoms/Input";
+import { Spinner } from "../atoms/Spinner";
+import { Field } from "../molecules/Field";
 
 /** Two steps: enter your email, then the 6-digit code we send to it. New emails get an account automatically. */
 export function SignInForm({ next }: { next: string }) {
@@ -28,7 +28,7 @@ export function SignInForm({ next }: { next: string }) {
     if (error) return setError(error.message ?? "Couldn't send the code. Try again in a minute.");
     setStep("code");
     setCode("");
-    setNotice(`We sent a code to ${email.trim()}. It may take a minute — check your spam folder too.`);
+    setNotice(`We sent a code to ${email.trim()}. It may take a minute, so check your spam folder too.`);
   }
 
   async function verify(e: React.FormEvent) {
@@ -47,9 +47,8 @@ export function SignInForm({ next }: { next: string }) {
   if (step === "email") {
     return (
       <form onSubmit={sendCode} className="space-y-4">
-        <label className="block">
-          <span className="mb-1.5 block text-sm font-medium">Email</span>
-          <input
+        <Field label="Email">
+          <Input
             type="email"
             required
             autoFocus
@@ -57,23 +56,22 @@ export function SignInForm({ next }: { next: string }) {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
-            className={input}
           />
-        </label>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <button disabled={busy} className={button}>
+        </Field>
+        {error && <Alert>{error}</Alert>}
+        <Button type="submit" size="lg" block disabled={busy}>
+          {busy && <Spinner />}
           {busy ? "Sending…" : "Email me a code"}
-        </button>
+        </Button>
       </form>
     );
   }
 
   return (
     <form onSubmit={verify} className="space-y-4">
-      {notice && <p className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900">{notice}</p>}
-      <label className="block">
-        <span className="mb-1.5 block text-sm font-medium">Code</span>
-        <input
+      {notice && <Alert tone="info">{notice}</Alert>}
+      <Field label="6-digit code">
+        <Input
           inputMode="numeric"
           autoComplete="one-time-code"
           required
@@ -83,20 +81,21 @@ export function SignInForm({ next }: { next: string }) {
           value={code}
           onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
           placeholder="123456"
-          className={`${input} text-center font-mono text-2xl tracking-[0.5em]`}
+          className="text-center font-mono text-2xl tracking-[0.5em]"
         />
-      </label>
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      <button disabled={busy || code.length !== 6} className={button}>
+      </Field>
+      {error && <Alert>{error}</Alert>}
+      <Button type="submit" size="lg" block disabled={busy || code.length !== 6}>
+        {busy && <Spinner />}
         {busy ? "Checking…" : "Sign in"}
-      </button>
-      <div className="flex justify-between text-sm">
-        <button type="button" onClick={() => setStep("email")} className="text-zinc-500 hover:text-zinc-900">
-          ← Different email
-        </button>
-        <button type="button" disabled={busy} onClick={() => sendCode()} className="text-zinc-500 hover:text-zinc-900">
+      </Button>
+      <div className="flex justify-between">
+        <Button variant="ghost" size="sm" onClick={() => setStep("email")}>
+          <span aria-hidden>←</span> Different email
+        </Button>
+        <Button variant="ghost" size="sm" disabled={busy} onClick={() => sendCode()}>
           Resend code
-        </button>
+        </Button>
       </div>
     </form>
   );

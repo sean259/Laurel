@@ -1,4 +1,6 @@
 import type { Match, TournamentFormat } from "@prisma/client";
+import { Card } from "../atoms/Card";
+import { SectionHeading } from "../molecules/SectionHeading";
 import { MatchCard } from "./MatchCard";
 
 type Props = {
@@ -58,8 +60,11 @@ export function Bracket({ matches, names, format, canManage = false }: Props) {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h2 className="mb-4 font-display text-2xl font-semibold">{title}</h2>
-      <div className="overflow-x-auto rounded-3xl border border-zinc-200 bg-white p-5 sm:p-6">{children}</div>
+      <SectionHeading title={title} />
+      {/* Wide brackets scroll sideways; the region is focusable so keyboard users can scroll it too. */}
+      <Card padding="none" className="overflow-x-auto p-5 sm:p-6" tabIndex={0} role="region" aria-label={title}>
+        {children}
+      </Card>
     </section>
   );
 }
@@ -96,7 +101,7 @@ function Rounds({
           : "";
         return (
           <div key={ms[0].round} className="flex w-56 shrink-0 flex-col">
-            <h3 className="mb-2 text-xs font-semibold uppercase tracking-widest text-zinc-400">
+            <h3 className="mb-2 text-xs font-semibold uppercase tracking-widest text-subtle">
               {label(i + 1, columns.length)}
             </h3>
             <div className={`bk-cells ${classes} ${connected ? "" : "justify-start gap-3"}`}>

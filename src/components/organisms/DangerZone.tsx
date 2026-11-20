@@ -2,6 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { ErrorText } from "../atoms/Alert";
+import { Button } from "../atoms/Button";
+import { SectionHeading } from "../molecules/SectionHeading";
 
 export function DangerZone({ id, name, started }: { id: string; name: string; started: boolean }) {
   const router = useRouter();
@@ -31,37 +34,39 @@ export function DangerZone({ id, name, started }: { id: string; name: string; st
   }
 
   const row = "flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6";
-  const button =
-    "shrink-0 rounded-full border border-red-300 px-5 py-2 text-sm font-medium text-red-700 hover:bg-red-50 disabled:opacity-50";
 
   return (
-    <section className="mt-10">
-      <h2 className="font-display text-2xl font-semibold">Danger zone</h2>
-      <div className="mt-4 divide-y divide-red-100 rounded-3xl border border-red-200 bg-white">
+    <section className="mt-12" aria-labelledby="danger-zone">
+      <SectionHeading id="danger-zone" title="Danger zone" description="These can't be undone." />
+      <div className="divide-y divide-danger-line rounded-3xl border border-danger-line bg-surface">
         {started && (
           <div className={row}>
             <div>
-              <p className="font-medium">Reset to draft</p>
-              <p className="text-sm text-zinc-500">
+              <p className="font-medium text-ink">Reset to draft</p>
+              <p className="mt-0.5 text-sm text-muted">
                 Delete the bracket and all scores so you can change the format, players or seeding.
               </p>
             </div>
-            <button onClick={() => run("reset")} disabled={busy !== null} className={button}>
+            <Button variant="danger" onClick={() => run("reset")} disabled={busy !== null}>
               {busy === "reset" ? "Resetting…" : "Reset tournament"}
-            </button>
+            </Button>
           </div>
         )}
         <div className={row}>
           <div>
-            <p className="font-medium">Delete tournament</p>
-            <p className="text-sm text-zinc-500">Remove it and everything in it for good.</p>
+            <p className="font-medium text-ink">Delete tournament</p>
+            <p className="mt-0.5 text-sm text-muted">Remove it and everything in it for good.</p>
           </div>
-          <button onClick={() => run("delete")} disabled={busy !== null} className={button}>
+          <Button variant="danger" onClick={() => run("delete")} disabled={busy !== null}>
             {busy === "delete" ? "Deleting…" : "Delete tournament"}
-          </button>
+          </Button>
         </div>
       </div>
-      {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+      {error && (
+        <div className="mt-3">
+          <ErrorText>{error}</ErrorText>
+        </div>
+      )}
     </section>
   );
 }

@@ -20,6 +20,17 @@ npm run dev                   # http://localhost:3000
 
 Useful: `npm run db:studio` opens a GUI for the database. `npm test` runs the bracket tests.
 
+## UI structure
+
+Components follow atomic design, in `src/components/`:
+
+- **atoms/**: the smallest pieces (Button, Input, Badge, Card, Alert, Avatar, Spinner, LaurelMark).
+- **molecules/**: small groups of atoms (Field, StatusBadge, PageHeader, SectionHeading, EmptyState, CopyField, NavLink, ActionButton).
+- **organisms/**: page sections (SiteHeader, TournamentHero, Bracket, MatchCard, Standings, TournamentForm, SetupChecklist…).
+- **templates/**: page layouts (CenteredPanel).
+
+Colors come from semantic tokens in `src/app/globals.css` (`text-ink`, `text-muted`, `text-subtle`, `bg-surface`, `border-line`, `text-accent-ink`…). Use them rather than raw palette colors; body text tokens all pass WCAG AA (4.5:1) on white.
+
 ## Branches
 
 - `dev`: day-to-day work lands here first.

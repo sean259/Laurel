@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getDb } from "@/lib/db";
 import { currentUserId } from "@/lib/access";
-import { DangerZone } from "@/components/DangerZone";
-import { TournamentForm } from "@/components/TournamentForm";
+import { PageHeader } from "@/components/molecules/PageHeader";
+import { DangerZone } from "@/components/organisms/DangerZone";
+import { TournamentForm } from "@/components/organisms/TournamentForm";
 
 export const dynamic = "force-dynamic";
 
@@ -24,15 +24,15 @@ export default async function EditTournamentPage({ params }: { params: Promise<{
 
   return (
     <div className="mx-auto max-w-2xl">
-      <Link href={`/tournaments/${t.id}`} className="text-sm text-zinc-500 hover:text-zinc-900">
-        ← Back to tournament
-      </Link>
-      <h1 className="mt-3 font-display text-4xl font-semibold">Edit tournament</h1>
-      <p className="mt-2 mb-8 text-zinc-600">
-        {started
-          ? "The bracket is already running, so only names can change here."
-          : "Change anything you like before you start."}
-      </p>
+      <PageHeader
+        title="Edit tournament"
+        back={{ href: `/tournaments/${t.id}`, label: t.name }}
+        description={
+          started
+            ? "The bracket is already running, so only names can change here."
+            : "Change anything you like before you start."
+        }
+      />
       <TournamentForm
         tournament={{
           id: t.id,
