@@ -1,20 +1,33 @@
 import type { Participant, Player } from "@prisma/client";
 import { Avatar } from "../atoms/Avatar";
+import { EditableName } from "../molecules/EditableName";
 
-/** Teams as cards: seed, team name and members. */
-export function TeamGrid({ teams, showSeeds = true }: { teams: Pick<Participant, "id" | "seed" | "name" | "members">[]; showSeeds?: boolean }) {
+/** Teams as cards: seed, team name and members. `canRename` adds a rename button (organizer only). */
+export function TeamGrid({
+  teams,
+  showSeeds = true,
+  canRename = false,
+}: {
+  teams: Pick<Participant, "id" | "seed" | "name" | "members">[];
+  showSeeds?: boolean;
+  canRename?: boolean;
+}) {
   return (
     <ol className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {teams.map((p) => (
         <li key={p.id} className="rounded-2xl border border-line bg-surface p-4">
-          <div className="flex items-baseline gap-2">
+          <div className="flex min-h-7 items-center gap-2">
             {showSeeds && (
               <span className="text-xs font-medium tabular-nums text-subtle">
                 <span className="sr-only">Seed </span>
                 {p.seed}
               </span>
             )}
-            <span className="font-semibold text-ink">{p.name}</span>
+            {canRename ? (
+              <EditableName participantId={p.id} name={p.name} className="font-semibold text-ink" />
+            ) : (
+              <span className="font-semibold text-ink">{p.name}</span>
+            )}
           </div>
           <ul className="mt-2 flex flex-wrap gap-1.5">
             {p.members.map((m, i) => (

@@ -179,7 +179,7 @@ export default async function TournamentPage({ params }: Props) {
                   count={mixed ? participants.length : undefined}
                   description={
                     mixed
-                      ? `Random teams of ${teamSize}. Numbers are seeds.`
+                      ? `Random teams of ${teamSize}. Numbers are seeds.${canManage ? " Use the pencil to rename a team." : ""}`
                       : players.length < needed
                         ? `Teams appear here once there are at least ${needed} players and they're mixed.`
                         : canManage
@@ -192,7 +192,7 @@ export default async function TournamentPage({ params }: Props) {
                     )
                   }
                 />
-                {mixed && <TeamGrid teams={participants} />}
+                {mixed && <TeamGrid teams={participants} canRename={canManage} />}
               </section>
               <section>
                 <SectionHeading title="Players" count={players.length} />
@@ -236,7 +236,7 @@ export default async function TournamentPage({ params }: Props) {
           {teams && (
             <section>
               <SectionHeading title="Teams" count={participants.length} />
-              <TeamGrid teams={participants} showSeeds={false} />
+              <TeamGrid teams={participants} showSeeds={false} canRename={canManage} />
             </section>
           )}
         </>

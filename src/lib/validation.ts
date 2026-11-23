@@ -48,6 +48,8 @@ export const updateTournamentSchema = z.object({
 
 export const joinSchema = z.object({ name: playerName });
 
+export const renameSchema = z.object({ name: playerName });
+
 export const reportScoreSchema = z
   .object({
     score1: z.number().int().min(0),

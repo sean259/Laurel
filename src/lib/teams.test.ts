@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { mixTeams, teamCount } from "./teams";
+import { mixTeams, teamCount, teamNames } from "./teams";
 
 const names = (n: number) => Array.from({ length: n }, (_, i) => `P${i + 1}`);
 
@@ -29,5 +29,21 @@ describe("mixTeams", () => {
   it("is random", () => {
     const seen = new Set(Array.from({ length: 20 }, () => JSON.stringify(mixTeams(names(8), 2))));
     expect(seen.size).toBeGreaterThan(1);
+  });
+});
+
+describe("teamNames", () => {
+  it("names a first mix Team 1…N", () => {
+    expect(teamNames([], 3)).toEqual(["Team 1", "Team 2", "Team 3"]);
+  });
+  it("keeps chosen names on a re-mix, in seed order", () => {
+    expect(teamNames(["Red", "Blue", "Team 3"], 3)).toEqual(["Red", "Blue", "Team 3"]);
+  });
+  it("drops names when there are fewer teams, and adds Team N when there are more", () => {
+    expect(teamNames(["Red", "Blue", "Green"], 2)).toEqual(["Red", "Blue"]);
+    expect(teamNames(["Red", "Blue"], 4)).toEqual(["Red", "Blue", "Team 3", "Team 4"]);
+  });
+  it("never repeats a name already in use", () => {
+    expect(teamNames(["Team 3", "Blue"], 3)).toEqual(["Team 3", "Blue", "Team 4"]);
   });
 });

@@ -24,3 +24,21 @@ export function mixTeams<T>(players: readonly T[], teamSize: number, random: () 
   pool.forEach((p, i) => teams[i % count].push(p));
   return shuffle(teams, random); // so the bigger teams don't always get the top seeds
 }
+
+/**
+ * Names for `count` freshly mixed teams: keep the previous names in seed order (so names the
+ * organizer chose survive a re-mix), and call any extra teams "Team N", skipping names in use.
+ */
+export function teamNames(previous: readonly string[], count: number): string[] {
+  const names = previous.slice(0, count);
+  const used = new Set(names.map((n) => n.toLowerCase()));
+  let n = names.length;
+  while (names.length < count) {
+    n++;
+    const name = `Team ${n}`;
+    if (used.has(name.toLowerCase())) continue;
+    used.add(name.toLowerCase());
+    names.push(name);
+  }
+  return names;
+}

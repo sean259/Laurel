@@ -19,7 +19,9 @@ const notFound = () => NextResponse.json({ error: "Not found" }, { status: 404 }
  * Check the signed-in user owns a tournament (looked up by tournament or match id).
  * Returns an error response to send back, or null if allowed.
  */
-export async function denyUnlessOwner(ref: { tournamentId: string } | { matchId: string }): Promise<NextResponse | null> {
+export async function denyUnlessOwner(
+  ref: { tournamentId: string } | { matchId: string } | { participantId: string },
+): Promise<NextResponse | null> {
   const userId = await currentUserId();
   if (!userId) return unauthorized();
   const db = getDb();
@@ -28,6 +30,10 @@ export async function denyUnlessOwner(ref: { tournamentId: string } | { matchId:
     const match = await db.match.findUnique({ where: { id: ref.matchId }, select: { tournamentId: true } });
     if (!match) return notFound();
     tournamentId = match.tournamentId;
+  } else if ("participantId" in ref) {
+    const p = await db.participant.findUnique({ where: { id: ref.participantId }, select: { tournamentId: true } });
+    if (!p) return notFound();
+    tournamentId = p.tournamentId;
   } else {
     tournamentId = ref.tournamentId;
   }
