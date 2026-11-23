@@ -19,13 +19,13 @@ export function SetupChecklist({ steps }: { steps: SetupStep[] }) {
               key={s.label}
               aria-current={active ? "step" : undefined}
               className={`flex flex-wrap items-center gap-3 rounded-2xl border px-4 py-3 ${
-                active ? "border-amber-300 bg-accent-soft" : "border-line"
+                active ? "border-accent-line bg-accent-soft" : "border-line"
               }`}
             >
               <span
                 aria-hidden
                 className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-semibold ${
-                  s.done ? "bg-success text-white" : active ? "bg-ink text-white" : "bg-surface-sunken text-muted"
+                  s.done ? "bg-success text-on-ink" : active ? "bg-ink text-on-ink" : "bg-surface-sunken text-muted"
                 }`}
               >
                 {s.done ? (

@@ -1,3 +1,4 @@
+import { currentUser } from "@/lib/auth/server";
 import { ButtonLink } from "@/components/atoms/Button";
 import { Card } from "@/components/atoms/Card";
 import { LaurelMark } from "@/components/atoms/LaurelMark";
@@ -28,11 +29,12 @@ const steps = [
   { n: "03", title: "Play it out", body: "Start the bracket and report scores until a champion is crowned." },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const signedIn = !!(await currentUser());
   return (
     <div className="space-y-24 pb-8">
       {/* Hero */}
-      <section className="relative overflow-hidden rounded-3xl bg-inverse px-6 py-16 text-white sm:px-12 lg:py-24">
+      <section className="relative overflow-hidden rounded-3xl border border-inverse-line bg-inverse px-6 py-16 text-white sm:px-12 lg:py-24">
         <div
           aria-hidden
           className="pointer-events-none absolute -top-32 right-0 h-96 w-96 rounded-full bg-amber-500/20 blur-3xl"
@@ -55,8 +57,8 @@ export default function Home() {
               <ButtonLink href="/tournaments/new" variant="accent" size="lg">
                 Create a tournament
               </ButtonLink>
-              <ButtonLink href="/tournaments" variant="inverse" size="lg">
-                Browse tournaments
+              <ButtonLink href={signedIn ? "/dashboard" : "/tournaments"} variant="inverse" size="lg">
+                {signedIn ? "My tournaments" : "Browse tournaments"}
               </ButtonLink>
             </div>
           </div>

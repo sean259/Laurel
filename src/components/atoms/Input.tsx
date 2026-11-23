@@ -2,7 +2,7 @@ import type { ComponentProps } from "react";
 
 /** Shared look for text inputs, textareas and selects. `compact` is for dense lists. */
 export function controlStyles({ compact = false, readOnly = false }: { compact?: boolean; readOnly?: boolean } = {}) {
-  return `w-full border border-line-strong text-ink outline-none transition placeholder:text-subtle hover:border-zinc-400 focus:border-amber-500 focus:ring-4 focus:ring-amber-500/20 aria-[invalid=true]:border-danger disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-subtle ${
+  return `w-full border border-line-strong text-ink outline-none transition placeholder:text-subtle hover:border-line-hover focus:border-accent-strong focus:ring-4 focus:ring-accent-strong/20 aria-[invalid=true]:border-danger disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-subtle ${
     compact ? "rounded-lg px-3 py-1.5 text-sm" : "rounded-xl px-3.5 py-2.5"
   } ${readOnly ? "bg-canvas" : "bg-surface"}`;
 }

@@ -13,6 +13,7 @@ export function TournamentHero({
   progress,
   champion,
   actions,
+  back = { href: "/tournaments", label: "All tournaments" },
 }: {
   name: string;
   status: TournamentStatus;
@@ -21,14 +22,16 @@ export function TournamentHero({
   progress?: { value: number; label: string } | null;
   champion?: string | null;
   actions?: ReactNode;
+  back?: { href: string; label: string };
 }) {
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-inverse px-6 py-8 text-white sm:px-10 sm:py-10">
+    <section className="relative overflow-hidden rounded-3xl border border-inverse-line bg-inverse px-6 py-8 text-white sm:px-10 sm:py-10">
       <div aria-hidden className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-amber-500/20 blur-3xl" />
       <div className="relative flex flex-wrap items-start justify-between gap-6">
         <div className="min-w-0">
-          <Link href="/tournaments" className="text-sm font-medium text-zinc-300 hover:text-white">
-            <span aria-hidden>← </span>All tournaments
+          <Link href={back.href} className="text-sm font-medium text-zinc-300 hover:text-white">
+            <span aria-hidden>← </span>
+            {back.label}
           </Link>
           <h1 className="mt-3 break-words font-display text-4xl font-semibold sm:text-5xl">{name}</h1>
           <div className="mt-4 flex flex-wrap items-center gap-2">

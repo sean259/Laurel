@@ -153,8 +153,9 @@ Browser ──fetch──▶ /api/... route ──Zod validate──▶ Prisma t
 - [x] Random teams: set players per team (2–10), organizer mixes the sign-ups into teams
 - [ ] Fixed teams (roster of users as one participant)
 - [ ] Organizations / co-organizers with roles
-- [ ] Search and filter public tournaments by game
-- [ ] Dark mode, mobile-first bracket view, accessibility pass
+- [x] Search public tournaments by name or game, filter by status
+- [x] Dark mode (follows the device, or pick System / Light / Dark)
+- [ ] Mobile-first bracket view, full accessibility pass
 - [ ] Analytics (Vercel Analytics / PostHog)
 - [ ] Optional: entry fees and prize pools via Stripe (needs legal review)
 

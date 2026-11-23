@@ -19,7 +19,7 @@ export function TournamentCard({
   return (
     <Link
       href={`/tournaments/${t.id}`}
-      className="group flex h-full flex-col rounded-2xl border border-line bg-surface p-5 transition hover:-translate-y-0.5 hover:border-line-strong hover:shadow-lg hover:shadow-zinc-200/60 motion-reduce:hover:translate-y-0"
+      className="group flex h-full flex-col rounded-2xl border border-line bg-surface p-5 transition hover:-translate-y-0.5 hover:border-line-strong hover:shadow-lg hover:shadow-elevate motion-reduce:hover:translate-y-0"
     >
       <div className="flex items-start justify-between gap-3">
         <h2 className="min-w-0 break-words font-display text-xl font-semibold leading-snug text-ink group-hover:text-accent-ink">

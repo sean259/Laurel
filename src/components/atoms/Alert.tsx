@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 
 const tones = {
   error: "bg-danger-soft text-danger border-danger-line",
-  info: "bg-accent-soft text-amber-900 border-amber-200",
-  success: "bg-success-soft text-success border-emerald-200",
+  info: "bg-accent-soft text-accent-tint-ink border-accent-line",
+  success: "bg-success-soft text-success border-success-line",
 };
 
 /** Inline message. Errors are announced to screen readers as soon as they appear. */

@@ -11,6 +11,7 @@ import { ButtonLink } from "@/components/atoms/Button";
 import { Card } from "@/components/atoms/Card";
 import { ActionButton } from "@/components/molecules/ActionButton";
 import { EmptyState } from "@/components/molecules/EmptyState";
+import { ShareButton } from "@/components/molecules/ShareButton";
 import { SectionHeading } from "@/components/molecules/SectionHeading";
 import { Bracket } from "@/components/organisms/Bracket";
 import { RegistrationPanel } from "@/components/organisms/RegistrationPanel";
@@ -132,12 +133,17 @@ export default async function TournamentPage({ params }: Props) {
         facts={facts}
         progress={progress}
         champion={champion ? names[champion] : null}
+        back={canManage ? { href: "/dashboard", label: "My tournaments" } : undefined}
         actions={
-          canManage && (
-            <ButtonLink href={`/tournaments/${tournament.id}/edit`} variant="inverse">
-              Edit
-            </ButtonLink>
-          )
+          <>
+            {/* Private tournaments can only be opened by the organizer, so there's nothing to share. */}
+            {tournament.visibility !== "PRIVATE" && <ShareButton title={tournament.name} variant="inverse" />}
+            {canManage && (
+              <ButtonLink href={`/tournaments/${tournament.id}/edit`} variant="inverse">
+                Edit
+              </ButtonLink>
+            )}
+          </>
         }
       />
 

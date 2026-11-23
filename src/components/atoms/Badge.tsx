@@ -4,8 +4,8 @@ export type BadgeTone = "neutral" | "accent" | "success" | "outline" | "inverse"
 
 const tones: Record<BadgeTone, string> = {
   neutral: "bg-surface-sunken text-muted",
-  accent: "bg-amber-100 text-amber-900",
-  success: "bg-emerald-100 text-emerald-900",
+  accent: "bg-accent-tint text-accent-tint-ink",
+  success: "bg-success-tint text-success-tint-ink",
   outline: "border border-line text-muted",
   /** For dark surfaces. */
   inverse: "border border-white/20 text-zinc-200",

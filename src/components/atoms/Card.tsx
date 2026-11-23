@@ -5,9 +5,9 @@ const paddings = { none: "", sm: "p-4", md: "p-6", lg: "p-6 sm:p-8" };
 const tones = {
   default: "border-line bg-surface",
   /** Highlighted: something needs attention or is open. */
-  accent: "border-amber-300 bg-accent-soft",
+  accent: "border-accent-line bg-accent-soft",
   /** Highlighted border only, white background. */
-  outlined: "border-amber-300 bg-surface",
+  outlined: "border-accent-line bg-surface",
 };
 
 /** Surface with a hairline border. The base of every panel on light pages. */

@@ -7,7 +7,7 @@ import { Button } from "../atoms/Button";
 import { ErrorText } from "../atoms/Alert";
 
 const scoreInput =
-  "h-9 w-14 rounded-lg border border-line-strong bg-surface px-2 text-center text-sm tabular-nums text-ink outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/20";
+  "h-9 w-14 rounded-lg border border-line-strong bg-surface px-2 text-center text-sm tabular-nums text-ink outline-none focus:border-accent-strong focus:ring-4 focus:ring-accent-strong/20";
 
 export function MatchCard({
   match,
@@ -29,6 +29,8 @@ export function MatchCard({
   const done = match.status === "COMPLETED";
   const editable = done && !match.bye && canManage;
   const showForm = (ready && canManage) || editing;
+  // Ties can't decide who advances; say so before the server has to.
+  const tie = s1 !== "" && s2 !== "" && Number(s1) === Number(s2);
 
   function startEditing() {
     setS1(String(match.score1 ?? ""));
@@ -145,10 +147,11 @@ export function MatchCard({
               aria-label={`Score for ${names[match.participant2Id!]}`}
               className={scoreInput}
             />
-            <Button type="submit" size="sm" disabled={busy} className="ml-auto">
+            <Button type="submit" size="sm" disabled={busy || tie} className="ml-auto">
               {busy ? "Saving…" : "Save"}
             </Button>
           </div>
+          {tie && <p className="mt-1.5 text-xs text-muted">Scores can&apos;t be tied: one side has to win.</p>}
           {editing && (
             <div className="mt-2 flex items-center justify-between text-xs">
               <button type="button" onClick={undo} disabled={busy} className="rounded font-medium text-danger hover:underline">
