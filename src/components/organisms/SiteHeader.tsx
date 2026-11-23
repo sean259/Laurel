@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { currentUser } from "@/lib/auth/server";
 import { ButtonLink } from "../atoms/Button";
-import { LaurelMark } from "../atoms/LaurelMark";
+import { LaurelMark, LaurelTile } from "../atoms/LaurelMark";
 import { NavLink } from "../molecules/NavLink";
 import { SeasonalSwitch, ThemePicker, ThemeToggle } from "../molecules/ThemeToggle";
 import { UserMenu } from "./UserMenu";
@@ -11,8 +11,8 @@ export async function SiteHeader() {
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-surface/85 backdrop-blur supports-[backdrop-filter]:bg-surface/70">
       <nav aria-label="Main" className="mx-auto flex h-16 max-w-6xl items-center gap-1 px-4 sm:gap-3">
-        <Link href="/" className="mr-1 flex items-center gap-2 rounded-lg font-display text-xl font-semibold text-ink">
-          <LaurelMark className="h-6 w-6 text-accent-strong" />
+        <Link href="/" className="group mr-1 flex items-center gap-2.5 rounded-lg font-display text-xl font-semibold tracking-tight text-ink">
+          <LaurelTile />
           Laurel
           {/* The season's emoji (CSS, see globals.css). Hidden on phones, where the header is full. */}
           <span aria-hidden className="season-mark hidden sm:inline" />

@@ -1,54 +1,44 @@
-/** Laurel wreath logo mark: two leafy branches curving up. Inherits color via `currentColor`. */
+/**
+ * Laurel wreath logo mark: two leafy branches crossing at the base, with a winner's star above.
+ * Inherits color via `currentColor`. The same shape is in src/app/icon.svg (the favicon).
+ */
 
-type P = { x: number; y: number };
+// Left branch; the right one is its mirror image. Leaves are pointed (two curves base to tip),
+// bigger toward the base, outer ones angled out and inner ones closer to the stem.
+const STEM = "M18.4 29.8Q1.2 25.5 7.4 6.8";
+const LEAVES =
+  "M15.2 28.8Q11.3 27.1 8.8 30.6Q12.8 32.3 15.2 28.8ZM10.6 26.3Q7.6 23.6 4.4 26.1Q7.5 28.8 10.6 26.3ZM7.5 22.8Q5.8 19.4 2.2 20.6Q3.9 24 7.5 22.8ZM6 18.4Q5.6 14.8 2.1 14.7Q2.4 18.2 6 18.4ZM5.9 13.1Q6.6 9.8 3.4 8.7Q2.8 12 5.9 13.1ZM12.5 27.5Q13.1 24.1 9.8 22.8Q9.2 26.2 12.5 27.5ZM8.7 24.5Q10.4 21.6 7.9 19.5Q6.2 22.3 8.7 24.5ZM6.5 20.5Q8.9 18.6 7.5 15.9Q5 17.7 6.5 20.5ZM5.8 15.6Q8.5 14.7 8 11.8Q5.3 12.7 5.8 15.6ZM7.3 7.2Q9.9 5.1 8.4 2.1Q5.8 4.2 7.3 7.2Z";
+const STAR = "M16 2.4Q16.6 5.4 19.6 6Q16.6 6.6 16 9.6Q15.4 6.6 12.4 6Q15.4 5.4 16 2.4Z";
 
-// Left branch stem: quadratic curve from the bottom center up to the top left.
-const P0 = { x: 14.5, y: 29 };
-const P1 = { x: 3, y: 22 };
-const P2 = { x: 9, y: 4 };
-
-const at = (t: number): P => ({
-  x: (1 - t) ** 2 * P0.x + 2 * (1 - t) * t * P1.x + t ** 2 * P2.x,
-  y: (1 - t) ** 2 * P0.y + 2 * (1 - t) * t * P1.y + t ** 2 * P2.y,
-});
-const tangent = (t: number): P => {
-  const x = 2 * (1 - t) * (P1.x - P0.x) + 2 * t * (P2.x - P1.x);
-  const y = 2 * (1 - t) * (P1.y - P0.y) + 2 * t * (P2.y - P1.y);
-  const len = Math.hypot(x, y);
-  return { x: x / len, y: y / len };
-};
-
-/** A leaf at point t on the stem, pointing outward (side = 1) or inward (side = -1). */
-function leaf(t: number, side: 1 | -1, size: number) {
-  const p = at(t);
-  const tan = tangent(t);
-  const normal = { x: tan.y * side, y: -tan.x * side };
-  const dir = { x: tan.x + normal.x * 0.8, y: tan.y + normal.y * 0.8 };
-  const angle = (Math.atan2(dir.y, dir.x) * 180) / Math.PI + 90;
-  const cx = p.x + normal.x * 1.4 * size + tan.x * 0.6;
-  const cy = p.y + normal.y * 1.4 * size + tan.y * 0.6;
-  const r = (n: number) => Math.round(n * 100) / 100;
-  return { cx: r(cx), cy: r(cy), rx: r(1.15 * size), ry: r(2.6 * size), angle: r(angle) };
+function Branch() {
+  return (
+    <>
+      <path d={STEM} fill="none" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" />
+      <path d={LEAVES} />
+    </>
+  );
 }
 
-const LEAVES = [
-  ...[0.12, 0.32, 0.52, 0.72].map((t) => leaf(t, 1, 1)),
-  ...[0.22, 0.42, 0.62, 0.82].map((t) => leaf(t, -1, 0.8)),
-  leaf(0.98, 1, 0.9),
-];
-
 export function LaurelMark({ className = "h-6 w-6" }: { className?: string }) {
-  const stem = `M${P0.x} ${P0.y} Q${P1.x} ${P1.y} ${P2.x} ${P2.y}`;
   return (
     <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true" className={className}>
-      {[false, true].map((mirror) => (
-        <g key={String(mirror)} transform={mirror ? "translate(32 0) scale(-1 1)" : undefined}>
-          <path d={stem} fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
-          {LEAVES.map((l, i) => (
-            <ellipse key={i} cx={l.cx} cy={l.cy} rx={l.rx} ry={l.ry} transform={`rotate(${l.angle} ${l.cx} ${l.cy})`} />
-          ))}
-        </g>
-      ))}
+      <Branch />
+      <g transform="translate(32 0) scale(-1 1)">
+        <Branch />
+      </g>
+      <path d={STAR} />
     </svg>
+  );
+}
+
+/** The mark on a glossy accent tile, for the site header. Follows the seasonal accent color. */
+export function LaurelTile({ className = "h-8 w-8" }: { className?: string }) {
+  return (
+    <span
+      aria-hidden
+      className={`grid shrink-0 place-items-center rounded-[10px] bg-linear-to-br from-accent-hover via-accent to-accent-strong text-on-accent shadow-[inset_0_1px_0_rgb(255_255_255/0.45),0_3px_10px_-4px_var(--color-accent-strong)] ring-1 ring-black/5 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105 ${className}`}
+    >
+      <LaurelMark className="h-[72%] w-[72%]" />
+    </span>
   );
 }
