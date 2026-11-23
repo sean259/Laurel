@@ -62,7 +62,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     <section>
       <SectionHeading title={title} />
       {/* Wide brackets scroll sideways; the region is focusable so keyboard users can scroll it too. */}
-      <Card padding="none" className="overflow-x-auto p-5 sm:p-6" tabIndex={0} role="region" aria-label={title}>
+      <Card padding="none" className="season-frame overflow-x-auto p-5 sm:p-6" tabIndex={0} role="region" aria-label={title}>
         {children}
       </Card>
     </section>

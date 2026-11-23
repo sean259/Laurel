@@ -258,23 +258,23 @@
  *   --s-mark  emoji after the logo    --s-particle  falling decoration (optional)    --s-name  label
  *   --s-fx-color  color of the falling decoration (defaults to the accent)
  */
-:root[data-season="newyear"] { --sh: 235; --sc: 0.13; --sl: 0.74; --sh2: 250; --s-mark: "✨"; --s-particle: "❄"; --s-name: "New Year"; }
-:root[data-season="valentine"] { --sh: 0; --sc: 0.18; --sl: 0.72; --sh2: 350; --s-mark: "💘"; --s-particle: "♥"; --s-name: "Valentine's"; }
-:root[data-season="stpatrick"] { --sh: 150; --sc: 0.17; --sl: 0.72; --sh2: 150; --s-mark: "☘️"; --s-particle: "☘"; --s-name: "St. Patrick's"; }
-:root[data-season="spring"] { --sh: 310; --sc: 0.12; --sl: 0.74; --sh2: 320; --s-mark: "🌸"; --s-particle: "🌸"; --s-name: "Spring"; }
-:root[data-season="bloom"] { --sh: 100; --sc: 0.16; --sl: 0.85; --sh2: 110; --s-mark: "🌼"; --s-particle: "✿"; --s-name: "Bloom"; }
-:root[data-season="summer"] { --sh: 45; --sc: 0.17; --sl: 0.75; --sh2: 60; --s-mark: "🌞"; --s-name: "Summer"; }
-:root[data-season="tropical"] { --sh: 180; --sc: 0.12; --sl: 0.75; --sh2: 185; --s-mark: "🌴"; --s-name: "Tropical"; }
-:root[data-season="ocean"] { --sh: 225; --sc: 0.14; --sl: 0.72; --sh2: 230; --s-mark: "🌊"; --s-name: "Ocean"; }
-:root[data-season="harvestmoon"] { --sh: 275; --sc: 0.13; --sl: 0.74; --sh2: 280; --s-mark: "🌙"; --s-particle: "✦"; --s-name: "Harvest Moon"; }
-:root[data-season="autumn"] { --sh: 55; --sc: 0.16; --sl: 0.72; --sh2: 60; --s-mark: "🍂"; --s-particle: "🍂"; --s-name: "Autumn"; }
-:root[data-season="halloween"] { --sh: 55; --sc: 0.19; --sl: 0.74; --sh2: 305; --s-mark: "🎃"; --s-particle: "🦇"; --s-name: "Halloween"; }
-:root[data-season="christmas"] { --sh: 27; --sc: 0.2; --sl: 0.58; --sh2: 155; --s-on: #fff; --s-mark: "🎄"; --s-particle: "❄"; --s-fx-color: oklch(0.8 0.07 230); --s-name: "Christmas"; }
+:root[data-season="newyear"] { --sh: 235; --sc: 0.13; --sl: 0.74; --sh2: 250; --s-mark: "✨"; --s-particle: "✦"; --s-particle-2: "✧"; --s-particle-3: "❄"; --s-c1: oklch(0.83 0.14 85); --s-c2: oklch(0.72 0.13 240); --s-c3: oklch(0.7 0.19 330); --s-name: "New Year"; }
+:root[data-season="valentine"] { --sh: 0; --sc: 0.18; --sl: 0.72; --sh2: 350; --s-mark: "💘"; --s-particle: "♥"; --s-particle-2: "♡"; --s-c1: oklch(0.7 0.2 5); --s-c2: oklch(0.82 0.1 350); --s-c3: oklch(0.6 0.22 20); --s-hang: "💝"; --s-name: "Valentine's"; }
+:root[data-season="stpatrick"] { --sh: 150; --sc: 0.17; --sl: 0.72; --sh2: 150; --s-mark: "☘️"; --s-particle: "☘"; --s-c1: oklch(0.7 0.17 150); --s-c2: oklch(0.83 0.15 90); --s-c3: oklch(0.6 0.15 160); --s-name: "St. Patrick's"; }
+:root[data-season="spring"] { --sh: 310; --sc: 0.12; --sl: 0.74; --sh2: 320; --s-mark: "🌸"; --s-particle: "🌸"; --s-particle-2: "❀"; --s-c1: oklch(0.8 0.12 350); --s-c2: oklch(0.75 0.12 300); --s-c3: oklch(0.85 0.1 160); --s-anim: season-flutter; --s-name: "Spring"; }
+:root[data-season="bloom"] { --sh: 100; --sc: 0.16; --sl: 0.85; --sh2: 110; --s-mark: "🌼"; --s-particle: "✿"; --s-particle-2: "🌼"; --s-c1: oklch(0.88 0.16 100); --s-c2: oklch(0.75 0.15 140); --s-c3: oklch(0.85 0.1 330); --s-anim: season-flutter; --s-name: "Bloom"; }
+:root[data-season="summer"] { --sh: 45; --sc: 0.17; --sl: 0.75; --sh2: 60; --s-mark: "🌞"; --s-c1: oklch(0.78 0.17 50); --s-c2: oklch(0.88 0.16 95); --s-c3: oklch(0.75 0.12 220); --s-glow: season-shimmer; --s-name: "Summer"; }
+:root[data-season="tropical"] { --sh: 180; --sc: 0.12; --sl: 0.75; --sh2: 185; --s-mark: "🌴"; --s-particle: "🌺"; --s-c1: oklch(0.75 0.12 180); --s-c2: oklch(0.75 0.16 25); --s-c3: oklch(0.86 0.17 125); --s-anim: season-flutter; --s-name: "Tropical"; }
+:root[data-season="ocean"] { --sh: 225; --sc: 0.14; --sl: 0.72; --sh2: 230; --s-mark: "🌊"; --s-particle: "○"; --s-particle-2: "◦"; --s-c1: oklch(0.72 0.14 225); --s-c2: oklch(0.8 0.1 190); --s-c3: oklch(0.92 0.04 220); --s-anim: season-rise; --s-name: "Ocean"; }
+:root[data-season="harvestmoon"] { --sh: 275; --sc: 0.13; --sl: 0.74; --sh2: 280; --s-mark: "🌙"; --s-particle: "✦"; --s-particle-2: "·"; --s-c1: oklch(0.74 0.13 275); --s-c2: oklch(0.85 0.13 85); --s-c3: oklch(0.55 0.15 260); --s-glow: season-twinkle; --s-name: "Harvest Moon"; }
+:root[data-season="autumn"] { --sh: 55; --sc: 0.16; --sl: 0.72; --sh2: 60; --s-mark: "🍂"; --s-particle: "🍂"; --s-particle-2: "🍁"; --s-c1: oklch(0.72 0.16 55); --s-c2: oklch(0.6 0.17 30); --s-c3: oklch(0.8 0.14 85); --s-anim: season-flutter; --s-name: "Autumn"; }
+:root[data-season="halloween"] { --sh: 55; --sc: 0.19; --sl: 0.74; --sh2: 305; --s-bgk: 2.6; --s-heroc: 0.075; --s-mark: "🎃"; --s-particle: "🦇"; --s-particle-2: "👻"; --s-particle-3: "🦇"; --s-anim: season-flutter; --s-c1: oklch(0.74 0.19 55); --s-c2: oklch(0.55 0.2 305); --s-c3: oklch(0.85 0.2 135); --s-glow: season-flicker; --s-glow-time: 3.5s; --s-hang: "🕷"; --s-corner: var(--s-web); --s-fog: oklch(0.55 0.16 305 / 0.22); --s-name: "Halloween"; }
+:root[data-season="christmas"] { --sh: 27; --sc: 0.2; --sl: 0.58; --sh2: 155; --s-on: #fff; --s-mark: "🎄"; --s-particle: "❄"; --s-particle-2: "❅"; --s-particle-3: "❆"; --s-fx-color: oklch(0.8 0.07 230); --s-c1: oklch(0.58 0.2 27); --s-c2: oklch(0.55 0.13 155); --s-c3: oklch(0.85 0.13 90); --s-glow: season-twinkle; --s-hang: "🔔"; --s-fog: oklch(0.97 0.01 230 / 0.35); --s-name: "Christmas"; }
 
 /* Light. Overrides the base light and dark blocks, so the dark blocks below must set the same variables. */
 :root[data-season] {
-  --c-canvas: oklch(0.985 0.012 var(--sh2));
-  --c-inverse: oklch(0.17 0.035 var(--sh2));
+  --c-canvas: oklch(0.985 calc(0.012 * var(--s-bgk, 1)) var(--sh2));
+  --c-inverse: oklch(0.17 var(--s-heroc, 0.035) var(--sh2));
   --c-accent: oklch(var(--sl) var(--sc) var(--sh));
   --c-accent-hover: oklch(calc(var(--sl) + 0.07) var(--sc) var(--sh));
   --c-accent-strong: oklch(calc(var(--sl) - 0.06) var(--sc) var(--sh));
@@ -290,8 +290,8 @@
 /* Dark. Keep both blocks in sync. */
 @media (prefers-color-scheme: dark) {
   :root[data-season]:not([data-theme="light"]) {
-    --c-canvas: oklch(0.145 0.016 var(--sh2));
-    --c-inverse: oklch(0.19 0.035 var(--sh2));
+    --c-canvas: oklch(0.145 calc(0.016 * var(--s-bgk, 1)) var(--sh2));
+    --c-inverse: oklch(0.19 var(--s-heroc, 0.035) var(--sh2));
     --c-accent: oklch(var(--sl) var(--sc) var(--sh));
     --c-accent-hover: oklch(calc(var(--sl) + 0.07) var(--sc) var(--sh));
     --c-accent-strong: oklch(calc(var(--sl) + 0.03) var(--sc) var(--sh));
@@ -306,8 +306,8 @@
   }
 }
 :root[data-season][data-theme="dark"] {
-  --c-canvas: oklch(0.145 0.016 var(--sh2));
-  --c-inverse: oklch(0.19 0.035 var(--sh2));
+  --c-canvas: oklch(0.145 calc(0.016 * var(--s-bgk, 1)) var(--sh2));
+  --c-inverse: oklch(0.19 var(--s-heroc, 0.035) var(--sh2));
   --c-accent: oklch(var(--sl) var(--sc) var(--sh));
   --c-accent-hover: oklch(calc(var(--sl) + 0.07) var(--sc) var(--sh));
   --c-accent-strong: oklch(calc(var(--sl) + 0.03) var(--sc) var(--sh));
@@ -350,18 +350,271 @@
   position: absolute;
   top: -3rem;
   opacity: 0.5;
-  animation: season-fall linear infinite;
+  animation-name: var(--s-anim, season-fall);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }
+/* Up to three glyphs per season, alternating across the pieces. */
 .season-fx span::before {
   content: var(--s-particle, "");
 }
+.season-fx span:nth-child(3n + 2)::before {
+  content: var(--s-particle-2, var(--s-particle, ""));
+}
+.season-fx span:nth-child(3n)::before {
+  content: var(--s-particle-3, var(--s-particle, ""));
+}
+/* Low drifting haze along the bottom of the screen (Halloween fog, Christmas snowbank). */
+:root[data-season] .season-fx::after {
+  content: "";
+  position: absolute;
+  inset: auto -25% -6vh;
+  height: 38vh;
+  background:
+    radial-gradient(ellipse 35% 60% at 25% 100%, var(--s-fog, transparent), transparent 70%),
+    radial-gradient(ellipse 40% 55% at 70% 100%, var(--s-fog, transparent), transparent 70%);
+  animation: season-fog 26s ease-in-out infinite alternate;
+}
+
+/* Straight down, turning (snow, sparkles). */
 @keyframes season-fall {
   to {
     transform: translate3d(var(--drift, 0), 110vh, 0) rotate(var(--spin, 0deg));
   }
 }
+/* Zig-zag down while flipping, so leaves tumble and bats flap. */
+@keyframes season-flutter {
+  0% {
+    transform: translate3d(0, 0, 0) scaleX(1);
+  }
+  25% {
+    transform: translate3d(var(--drift, 0), 28vh, 0) scaleX(-1);
+  }
+  50% {
+    transform: translate3d(calc(var(--drift, 0) * -1), 55vh, 0) scaleX(1);
+  }
+  75% {
+    transform: translate3d(var(--drift, 0), 82vh, 0) scaleX(-1);
+  }
+  100% {
+    transform: translate3d(0, 110vh, 0) scaleX(1);
+  }
+}
+/* Bubbles rising from the bottom. */
+@keyframes season-rise {
+  from {
+    transform: translate3d(0, 112vh, 0);
+  }
+  to {
+    transform: translate3d(var(--drift, 0), 0, 0);
+  }
+}
+@keyframes season-fog {
+  to {
+    transform: translateX(12%);
+  }
+}
+
+/*
+ * Seasonal motion on the page itself. Every piece is decoration only and stops for anyone who
+ * prefers reduced motion (see the end of this section).
+ *   --s-c1..3  the three colors of the animated bracket border (default: accent shades)
+ *   --s-glow   hero glow animation: season-breathe (default), season-flicker, season-twinkle, season-shimmer
+ *   --s-hang   something dangling on a thread from the top of the hero (spider, bell…)
+ *   --s-corner image in the hero's top-right corner (the Halloween web)
+ *   --s-fog    color of the haze at the bottom of the screen
+ *   --s-bgk    multiplier for how strongly the page background is tinted; --s-heroc hero tint
+ */
+:root {
+  --s-web: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='none' stroke='white' stroke-width='0.7' stroke-linecap='round'%3E%3Cpath d='M100 0L0 0M100 0L7.6 38.3M100 0L29.3 70.7M100 0L61.7 92.4M100 0L100 100M70 0Q75 5 72.3 11.5Q78.8 14.2 78.8 21.2Q85.8 21.2 88.5 27.7Q95 25 100 30M45 0Q54.1 9.1 49.2 21.1Q61.2 26 61.1 38.9Q74 38.8 79 50.8Q90.9 45.9 100 55M20 0Q33.3 13.3 26.1 30.6Q43.5 37.8 43.4 56.6Q62.2 56.5 69.4 73.9Q86.7 66.7 100 80'/%3E%3C/svg%3E");
+}
+@property --s-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+/* The bracket panel: a slowly turning gradient border in the season's colors, with a soft glow. */
+:root[data-season] .season-frame {
+  border-width: 2px;
+  border-color: transparent;
+  background:
+    linear-gradient(var(--color-surface), var(--color-surface)) padding-box,
+    conic-gradient(
+        from var(--s-angle),
+        var(--s-c1, var(--color-accent)),
+        var(--s-c2, var(--color-accent-line)),
+        var(--s-c3, var(--color-accent-strong)),
+        var(--s-c1, var(--color-accent))
+      )
+      border-box;
+  box-shadow: 0 10px 40px -18px var(--s-c1, var(--color-accent));
+  animation: season-spin 12s linear infinite;
+}
+@keyframes season-spin {
+  to {
+    --s-angle: 360deg;
+  }
+}
+
+/* Bracket lines take the accent color, and a spark runs along each line into the next round. */
+:root[data-season] .bk {
+  --bk-line: var(--color-accent-line);
+}
+:root[data-season] .bk-has-prev .bk-cell::before {
+  height: 2px;
+  margin-top: -1px;
+  border-top: 0;
+  background:
+    linear-gradient(90deg, transparent, var(--s-c1, var(--color-accent)), transparent) 0 0 / 60% 100% no-repeat,
+    var(--bk-line);
+  animation: bk-spark 2.8s ease-in infinite;
+}
+@keyframes bk-spark {
+  from {
+    background-position: -150% 0, 0 0;
+  }
+  to {
+    background-position: 250% 0, 0 0;
+  }
+}
+
+/* A match waiting for its result gently pulses. */
+:root[data-season] .season-ready {
+  animation: season-pulse 2.4s ease-in-out infinite;
+}
+@keyframes season-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-accent) 15%, transparent), 0 0 0 -4px transparent;
+  }
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in oklab, var(--color-accent) 28%, transparent), 0 0 18px -4px var(--color-accent);
+  }
+}
+
+/* Hero glow: breathing by default, candle flicker at Halloween, twinkle in winter. */
+:root[data-season] .season-glow {
+  animation-name: var(--s-glow, season-breathe);
+  animation-duration: var(--s-glow-time, 7s);
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+@keyframes season-breathe {
+  50% {
+    opacity: 0.55;
+    transform: scale(1.15);
+  }
+}
+@keyframes season-flicker {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  8% { opacity: 0.6; }
+  11% { opacity: 1; transform: scale(1.08); }
+  37% { opacity: 0.8; }
+  40% { opacity: 0.35; transform: scale(0.95); }
+  44% { opacity: 1; }
+  70% { opacity: 0.75; transform: scale(1.12); }
+  73% { opacity: 1; }
+}
+@keyframes season-twinkle {
+  25% { opacity: 0.5; }
+  50% { opacity: 1; transform: scale(1.2); }
+  75% { opacity: 0.6; }
+}
+@keyframes season-shimmer {
+  50% {
+    opacity: 0.7;
+    transform: translate(-2rem, 1.5rem) scale(1.2);
+  }
+}
+
+/* Something dangling from the top of the hero, swaying on its thread. */
+.season-hang,
+.season-corner {
+  display: none;
+}
+@media (min-width: 640px) {
+  :root:is([data-season="halloween"], [data-season="christmas"], [data-season="valentine"]) .season-hang {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 1.25rem;
+    width: 1px;
+    height: 4.5rem;
+    background: linear-gradient(rgb(255 255 255 / 0.05), rgb(255 255 255 / 0.4));
+    transform-origin: top;
+    animation: season-sway 5s ease-in-out infinite alternate;
+  }
+  :root[data-season] .season-hang::after {
+    content: var(--s-hang, none);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    font-size: 1.35rem;
+    line-height: 1;
+    transform: translate(-50%, -0.2rem);
+    animation: season-bob 3.2s ease-in-out infinite alternate;
+  }
+  :root[data-season] .season-corner {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 11rem;
+    height: 11rem;
+    background: var(--s-corner, none) no-repeat top right / contain;
+    opacity: 0.22;
+  }
+}
+@keyframes season-sway {
+  from { transform: rotate(-5deg); }
+  to { transform: rotate(5deg); }
+}
+@keyframes season-bob {
+  to {
+    transform: translate(-50%, 1rem);
+  }
+}
+
+/* Light sweeping across the champion banner. */
+:root[data-season] .season-shine {
+  overflow: hidden;
+}
+:root[data-season] .season-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.18) 50%, transparent 65%);
+  transform: translateX(-100%);
+  animation: season-sweep 4.5s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes season-sweep {
+  60%, 100% {
+    transform: translateX(100%);
+  }
+}
+
+/* The logo's season emoji gives a little wiggle now and then. */
+:root[data-season] .season-mark::after {
+  display: inline-block;
+  margin-left: 0.15rem;
+  animation: season-wiggle 4s ease-in-out infinite;
+}
+@keyframes season-wiggle {
+  0%, 80%, 100% { transform: rotate(0); }
+  84% { transform: rotate(-14deg) scale(1.15); }
+  88% { transform: rotate(12deg) scale(1.15); }
+  92% { transform: rotate(-6deg); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   :root[data-season] .season-fx {
     display: none;
+  }
+  :root[data-season] :is(.season-frame, .season-ready, .season-glow, .season-hang, .season-mark),
+  :root[data-season] :is(.season-hang, .season-mark, .season-shine)::after,
+  :root[data-season] .bk-has-prev .bk-cell::before {
+    animation: none;
   }
 }

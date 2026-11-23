@@ -101,7 +101,7 @@ export function MatchCard({
   const frame = match.bye
     ? "border-dashed border-line bg-canvas"
     : showForm || ready
-      ? "border-accent bg-surface ring-4 ring-accent/15"
+      ? `border-accent bg-surface ring-4 ring-accent/15 ${ready && !showForm ? "season-ready" : ""}`
       : "border-line bg-surface shadow-sm";
 
   return (
