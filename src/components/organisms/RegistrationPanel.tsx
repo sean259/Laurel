@@ -8,7 +8,15 @@ import { Card } from "../atoms/Card";
 import { CopyField } from "../molecules/CopyField";
 
 /** Organizer-only: share the sign-up link and open or close registration. */
-export function RegistrationPanel({ tournamentId, open }: { tournamentId: string; open: boolean }) {
+export function RegistrationPanel({
+  tournamentId,
+  open,
+  isPrivate = false,
+}: {
+  tournamentId: string;
+  open: boolean;
+  isPrivate?: boolean;
+}) {
   const router = useRouter();
   const path = `/tournaments/${tournamentId}/join`;
   const [url, setUrl] = useState(path);
@@ -45,12 +53,14 @@ export function RegistrationPanel({ tournamentId, open }: { tournamentId: string
             </span>
           </h2>
           <p className="mt-1 text-sm text-muted">
-            {open
-              ? "Share this link and players can add their own name, no account needed."
-              : "Open sign-ups to let players add themselves with a link."}
+            {isPrivate
+              ? "This tournament is private. Make it unlisted or public in Edit to share a sign-up link."
+              : open
+                ? "Share this link and players can add their own name, no account needed."
+                : "Open sign-ups to let players add themselves with a link."}
           </p>
         </div>
-        <Button variant={open ? "secondary" : "primary"} onClick={toggle} disabled={busy}>
+        <Button variant={open ? "secondary" : "primary"} onClick={toggle} disabled={busy || isPrivate}>
           {busy ? "Saving…" : open ? "Close sign-ups" : "Open sign-ups"}
         </Button>
       </div>

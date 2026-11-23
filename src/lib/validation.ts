@@ -11,6 +11,9 @@ const teamSize = z.number().int().min(1).max(MAX_TEAM_SIZE);
 /** Fewest players a tournament can start with: 2 entries, or enough players for 2 teams. */
 export const minPlayers = (size: number) => (size > 1 ? size * 2 : 2);
 
+export const visibility = z.enum(["PUBLIC", "UNLISTED", "PRIVATE"]);
+export const PRIVATE_SIGNUPS_ERROR = "Private tournaments can't take sign-ups. Make it unlisted to share a sign-up link.";
+
 export const createTournamentSchema = z
   .object({
     name,
@@ -18,12 +21,14 @@ export const createTournamentSchema = z
     format,
     teamSize: teamSize.default(1),
     registrationOpen: z.boolean().default(false),
+    visibility: visibility.default("PUBLIC"),
     // Solo: the bracket entries in seed order. Teams: the pool of players to mix.
     participants,
   })
   .refine((t) => t.registrationOpen || t.participants.length >= minPlayers(t.teamSize), {
     message: "Add more players, or let players sign up with a link",
-  });
+  })
+  .refine((t) => !(t.registrationOpen && t.visibility === "PRIVATE"), { message: PRIVATE_SIGNUPS_ERROR });
 
 /**
  * Edit a tournament. Every field is optional. Format, team size and player changes are only
@@ -35,6 +40,7 @@ export const updateTournamentSchema = z.object({
   format: format.optional(),
   teamSize: teamSize.optional(),
   registrationOpen: z.boolean().optional(),
+  visibility: visibility.optional(),
   participants: participants.optional(),
   /** The list the editor started from. If it no longer matches, someone signed up meanwhile. */
   previousParticipants: participants.optional(),

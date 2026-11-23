@@ -41,6 +41,7 @@ export default async function EditTournamentPage({ params }: { params: Promise<{
           format: t.format,
           teamSize: t.teamSize,
           registrationOpen: t.registrationOpen,
+          visibility: t.visibility,
           started,
           // Draft team tournaments edit the player pool; otherwise the bracket entries.
           participants: (!started && t.teamSize > 1 ? t.players : t.participants).map((p) => p.name),

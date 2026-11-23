@@ -5,7 +5,11 @@ import { currentUserId, unauthorized } from "@/lib/access";
 
 export async function GET() {
   const db = getDb();
-  const tournaments = await db.tournament.findMany({ orderBy: { createdAt: "desc" }, take: 50 });
+  const tournaments = await db.tournament.findMany({
+    where: { visibility: "PUBLIC" },
+    orderBy: { createdAt: "desc" },
+    take: 50,
+  });
   return NextResponse.json(tournaments);
 }
 
@@ -17,7 +21,7 @@ export async function POST(req: Request) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid input" }, { status: 400 });
   }
-  const { name, game, format, teamSize, registrationOpen, participants } = parsed.data;
+  const { name, game, format, teamSize, registrationOpen, visibility, participants } = parsed.data;
   const teams = teamSize > 1;
 
   const tournament = await db.tournament.create({
@@ -27,6 +31,7 @@ export async function POST(req: Request) {
       format,
       teamSize,
       registrationOpen,
+      visibility,
       ownerId,
       // Solo: players are the bracket entries. Teams: players wait in the pool to be mixed.
       ...(teams

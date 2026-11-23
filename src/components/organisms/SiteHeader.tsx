@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { currentUser } from "@/lib/auth/server";
 import { ButtonLink } from "../atoms/Button";
 import { LaurelMark } from "../atoms/LaurelMark";
 import { NavLink } from "../molecules/NavLink";
 import { UserMenu } from "./UserMenu";
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const signedIn = !!(await currentUser());
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-surface/85 backdrop-blur supports-[backdrop-filter]:bg-surface/70">
       <nav aria-label="Main" className="mx-auto flex h-16 max-w-6xl items-center gap-2 px-4 sm:gap-4">
@@ -15,6 +17,12 @@ export function SiteHeader() {
         <NavLink href="/tournaments" exact>
           Tournaments
         </NavLink>
+        {signedIn && (
+          <NavLink href="/dashboard">
+            <span className="sm:hidden">Mine</span>
+            <span className="hidden sm:inline">My tournaments</span>
+          </NavLink>
+        )}
         <div className="ml-auto flex items-center gap-2">
           <ButtonLink href="/tournaments/new" size="sm" aria-label="New tournament">
             <span aria-hidden className="text-base leading-none">

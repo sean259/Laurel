@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { Format } from "@/lib/engine";
-import { FORMATS } from "@/lib/formats";
+import { FORMATS, VISIBILITIES, type Visibility } from "@/lib/formats";
 import { teamCount } from "@/lib/teams";
 import { MAX_ENTRIES, MAX_TEAM_SIZE, minPlayers } from "@/lib/validation";
 import { Alert } from "../atoms/Alert";
@@ -30,6 +30,7 @@ type Existing = {
   format: Format;
   teamSize: number;
   registrationOpen: boolean;
+  visibility: Visibility;
   started: boolean;
   participants: string[]; // draft: seed order (solo) or the player pool (teams); started: bracket entries
 };
@@ -48,10 +49,13 @@ export function TournamentForm({ tournament }: { tournament?: Existing }) {
   const [renames, setRenames] = useState(tournament?.participants ?? []);
   const [teamSize, setTeamSize] = useState(tournament?.teamSize ?? 1);
   const [registrationOpen, setRegistrationOpen] = useState(tournament?.registrationOpen ?? false);
+  const [visibility, setVisibility] = useState<Visibility>(tournament?.visibility ?? "PUBLIC");
+  const isPrivate = visibility === "PRIVATE";
+  const signups = registrationOpen && !isPrivate; // private tournaments have no sign-up link
   const teams = teamSize > 1;
   const count = locked ? renames.length : parse(players).length;
   const renamesValid = renames.every((r) => r.trim().length > 0);
-  const enough = locked || registrationOpen || count >= minPlayers(teamSize);
+  const enough = locked || signups || count >= minPlayers(teamSize);
   const tooMany = !locked && count > MAX_ENTRIES;
 
   function shuffle() {
@@ -76,7 +80,8 @@ export function TournamentForm({ tournament }: { tournament?: Existing }) {
       name: form.get("name"),
       game: editing ? String(form.get("game") ?? "") : form.get("game") || undefined,
       ...(!locked && { format: form.get("format"), teamSize }),
-      registrationOpen,
+      registrationOpen: signups,
+      visibility,
       // Only send the list when it was edited, along with the list it was edited from, so the
       // server can refuse instead of silently dropping anyone who signed up in the meantime.
       ...(listChanged && { participants: list }),
@@ -108,7 +113,7 @@ export function TournamentForm({ tournament }: { tournament?: Existing }) {
       </span>
       {teams && teamCount(count, teamSize) >= 2 && ` → ${teamCount(count, teamSize)} teams`}
       {!tooMany && !enough && ` · need at least ${minPlayers(teamSize)}, or let players sign up`}
-      {registrationOpen && count === 0 && " · players will add themselves with the link"}
+      {signups && count === 0 && " · players will add themselves with the link"}
     </span>
   );
 
@@ -173,15 +178,17 @@ export function TournamentForm({ tournament }: { tournament?: Existing }) {
             <label className={`${choiceCard} flex items-start gap-3 self-start`}>
               <input
                 type="checkbox"
-                checked={registrationOpen}
-                disabled={locked}
+                checked={signups}
+                disabled={locked || isPrivate}
                 onChange={(e) => setRegistrationOpen(e.target.checked)}
                 className="mt-0.5 h-4 w-4 shrink-0 accent-amber-500"
               />
               <span>
                 <span className="block text-sm font-semibold text-ink">Let players sign up with a link</span>
                 <span className="mt-1 block text-xs leading-relaxed text-muted">
-                  Anyone with the link can add their name until you start. No account needed.
+                  {isPrivate
+                    ? "Not available for private tournaments. Choose unlisted to share a link."
+                    : "Anyone with the link can add their name until you start. No account needed."}
                 </span>
               </span>
             </label>
@@ -218,7 +225,7 @@ export function TournamentForm({ tournament }: { tournament?: Existing }) {
                   Players{" "}
                   <span className="font-normal text-subtle">
                     (one per line{teams ? "" : ", best seed first"}
-                    {registrationOpen ? ", optional" : ""})
+                    {signups ? ", optional" : ""})
                   </span>
                 </>
               }
@@ -235,13 +242,42 @@ export function TournamentForm({ tournament }: { tournament?: Existing }) {
               <Textarea
                 value={players}
                 onChange={(e) => setPlayers(e.target.value)}
-                required={!registrationOpen}
+                required={!signups}
                 rows={8}
                 className="font-mono text-sm"
                 placeholder={"Aurora\nEmber\nNimbus\nVortex"}
               />
             </Field>
           )}
+        </Step>
+
+        <Step n={4} title="Who can see it">
+          <fieldset>
+            <legend className="sr-only">Visibility</legend>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {VISIBILITIES.map((v) => (
+                <label key={v.value} className={choiceCard}>
+                  <input
+                    type="radio"
+                    name="visibility"
+                    value={v.value}
+                    checked={visibility === v.value}
+                    onChange={() => setVisibility(v.value)}
+                    className="peer sr-only"
+                  />
+                  <span
+                    aria-hidden
+                    className="absolute right-4 top-4 h-4 w-4 rounded-full border border-zinc-400 bg-surface peer-checked:border-[5px] peer-checked:border-amber-500"
+                  />
+                  <span className="block pr-6 text-sm font-semibold text-ink">{v.label}</span>
+                  <span className="mt-1 block text-xs leading-relaxed text-muted">{v.description}</span>
+                </label>
+              ))}
+            </div>
+            {isPrivate && registrationOpen && !locked && (
+              <p className="mt-3 text-xs text-subtle">Sign-ups will be closed, since private tournaments have no sign-up link.</p>
+            )}
+          </fieldset>
         </Step>
 
         {error && <Alert>{error}</Alert>}

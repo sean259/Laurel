@@ -1,7 +1,8 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getDb } from "@/lib/db";
-import { currentUserId } from "@/lib/access";
-import { formatLabel } from "@/lib/formats";
+import { canView, currentUserId } from "@/lib/access";
+import { formatLabel, visibilityLabel } from "@/lib/formats";
 import { computeStandings, findChampion } from "@/lib/standings";
 import { swissRoundCount } from "@/lib/swiss";
 import { teamCount } from "@/lib/teams";
@@ -20,7 +21,17 @@ import { TournamentHero } from "@/components/organisms/TournamentHero";
 
 export const dynamic = "force-dynamic";
 
-export default async function TournamentPage({ params }: { params: Promise<{ id: string }> }) {
+type Props = { params: Promise<{ id: string }> };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params;
+  const t = await getDb().tournament.findUnique({ where: { id }, select: { name: true, visibility: true, ownerId: true } });
+  if (!t || !canView(t, await currentUserId())) return { title: "Tournament not found" };
+  // Unlisted and private tournaments stay out of search engines.
+  return { title: t.name, ...(t.visibility !== "PUBLIC" && { robots: { index: false, follow: false } }) };
+}
+
+export default async function TournamentPage({ params }: Props) {
   const db = getDb();
   const { id } = await params;
   const tournament = await db.tournament.findUnique({
@@ -32,7 +43,9 @@ export default async function TournamentPage({ params }: { params: Promise<{ id:
     },
   });
   if (!tournament) notFound();
-  const canManage = tournament.ownerId !== null && tournament.ownerId === (await currentUserId());
+  const userId = await currentUserId();
+  if (!canView(tournament, userId)) notFound(); // private: don't reveal that it exists
+  const canManage = tournament.ownerId !== null && tournament.ownerId === userId;
 
   const { format, matches, status, teamSize, players, participants } = tournament;
   const teams = teamSize > 1;
@@ -68,6 +81,7 @@ export default async function TournamentPage({ params }: { params: Promise<{ id:
     tournament.game ?? "Any game",
     teams ? `${teamSize}v${teamSize}` : "Solo",
     plural(playerCount, "player") + (mixed ? ` · ${plural(participants.length, "team")}` : ""),
+    ...(tournament.visibility === "PUBLIC" ? [] : [visibilityLabel(tournament.visibility)]),
   ];
 
   const startButton = (
@@ -132,7 +146,11 @@ export default async function TournamentPage({ params }: { params: Promise<{ id:
           {canManage && (
             <div className="grid items-start gap-6 lg:grid-cols-2">
               <SetupChecklist steps={steps} />
-              <RegistrationPanel tournamentId={tournament.id} open={tournament.registrationOpen} />
+              <RegistrationPanel
+                tournamentId={tournament.id}
+                open={tournament.registrationOpen}
+                isPrivate={tournament.visibility === "PRIVATE"}
+              />
             </div>
           )}
           {!canManage && tournament.registrationOpen && (

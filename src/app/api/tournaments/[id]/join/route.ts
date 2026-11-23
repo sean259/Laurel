@@ -15,9 +15,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
   const t = await db.tournament.findUnique({
     where: { id },
-    select: { status: true, registrationOpen: true, teamSize: true },
+    select: { status: true, registrationOpen: true, teamSize: true, visibility: true },
   });
-  if (!t) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  // Private tournaments look the same as missing ones to everyone else.
+  if (!t || t.visibility === "PRIVATE") return NextResponse.json({ error: "Not found" }, { status: 404 });
   if (t.status !== "DRAFT" || !t.registrationOpen) {
     return NextResponse.json({ error: "Sign-ups for this tournament are closed" }, { status: 409 });
   }

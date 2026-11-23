@@ -6,7 +6,7 @@ import { CenteredPanel } from "@/components/templates/CenteredPanel";
 export const dynamic = "force-dynamic";
 
 // Only allow local paths so the sign-in page can't be used to bounce people to other sites.
-const safeNext = (next?: string) => (next && next.startsWith("/") && !next.startsWith("//") ? next : "/tournaments");
+const safeNext = (next?: string) => (next && next.startsWith("/") && !next.startsWith("//") ? next : "/dashboard");
 
 export default async function SignInPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
   const next = safeNext((await searchParams).next);

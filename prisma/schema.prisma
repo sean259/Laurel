@@ -30,6 +30,12 @@ enum TournamentStatus {
   COMPLETED
 }
 
+enum Visibility {
+  PUBLIC // listed on /tournaments
+  UNLISTED // anyone with the link can view it, but it isn't listed
+  PRIVATE // only the owner can view it (no sign-up link)
+}
+
 enum MatchStatus {
   PENDING // waiting for participants
   READY // both participants known
@@ -48,6 +54,7 @@ model Tournament {
   teamSize         Int              @default(1)
   // Anyone with the link can add themselves while this is on (DRAFT only)
   registrationOpen Boolean          @default(false)
+  visibility       Visibility       @default(PUBLIC)
   participants     Participant[]
   // Team tournaments only: the pool of players that gets mixed into teams
   players          Player[]
@@ -56,6 +63,7 @@ model Tournament {
   updatedAt        DateTime         @updatedAt
 
   @@index([ownerId])
+  @@index([visibility, createdAt])
 }
 
 model Participant {

@@ -13,8 +13,12 @@ type Props = { params: Promise<{ id: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
-  const t = await getDb().tournament.findUnique({ where: { id }, select: { name: true } });
-  return { title: t ? `Join ${t.name}` : "Join tournament" };
+  const t = await getDb().tournament.findUnique({ where: { id }, select: { name: true, visibility: true } });
+  if (!t || t.visibility === "PRIVATE") return { title: "Join tournament" };
+  return {
+    title: `Join ${t.name}`,
+    ...(t.visibility === "UNLISTED" && { robots: { index: false, follow: false } }),
+  };
 }
 
 export default async function JoinPage({ params }: Props) {
@@ -23,7 +27,7 @@ export default async function JoinPage({ params }: Props) {
     where: { id },
     include: { _count: { select: { participants: true, players: true } } },
   });
-  if (!t) notFound();
+  if (!t || t.visibility === "PRIVATE") notFound();
   const teams = t.teamSize > 1;
   const signedUp = teams ? t._count.players : t._count.participants;
   const open = t.status === "DRAFT" && t.registrationOpen;

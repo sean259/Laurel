@@ -7,7 +7,11 @@ export async function currentUserId(): Promise<string | null> {
   return (await currentUser())?.id ?? null;
 }
 
-export const unauthorized = () => NextResponse.json({ error: "Sign in to do that" }, { status: 401 });
+/** Private tournaments are only visible to their owner; public and unlisted ones to anyone with the link. */
+export const canView = (t: { visibility: string; ownerId: string | null }, userId: string | null) =>
+  t.visibility !== "PRIVATE" || (t.ownerId !== null && t.ownerId === userId);
+
+export const unauthorized =() => NextResponse.json({ error: "Sign in to do that" }, { status: 401 });
 const forbidden = () => NextResponse.json({ error: "Only the organizer can manage this tournament" }, { status: 403 });
 const notFound = () => NextResponse.json({ error: "Not found" }, { status: 404 });
 

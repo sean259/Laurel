@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
-import { updateTournamentSchema } from "@/lib/validation";
+import { PRIVATE_SIGNUPS_ERROR, updateTournamentSchema } from "@/lib/validation";
 import { denyUnlessOwner } from "@/lib/access";
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -18,7 +18,7 @@ export async function PATCH(req: Request, { params }: Ctx) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid input" }, { status: 400 });
   }
-  const { name, game, format, teamSize, registrationOpen, participants, previousParticipants } = parsed.data;
+  const { name, game, format, teamSize, registrationOpen, visibility, participants, previousParticipants } = parsed.data;
 
   const tournament = await db.tournament.findUnique({
     where: { id },
@@ -36,6 +36,12 @@ export async function PATCH(req: Request, { params }: Ctx) {
       { error: "The player list changed while you were editing (someone may have signed up). Reload the page and try again." },
       { status: 409 },
     );
+  }
+  // Private tournaments have no sign-up link: opening sign-ups on one is refused, and making
+  // a tournament private closes its sign-ups.
+  const nowPrivate = (visibility ?? tournament.visibility) === "PRIVATE";
+  if (nowPrivate && registrationOpen) {
+    return NextResponse.json({ error: PRIVATE_SIGNUPS_ERROR }, { status: 409 });
   }
   if (format && format !== tournament.format && !draft) {
     return NextResponse.json({ error: "Reset the tournament to draft to change the format" }, { status: 409 });
@@ -57,6 +63,8 @@ export async function PATCH(req: Request, { params }: Ctx) {
         ...(name !== undefined && { name }),
         ...(game !== undefined && { game: game || null }),
         ...(registrationOpen !== undefined && { registrationOpen }),
+        ...(visibility !== undefined && { visibility }),
+        ...(nowPrivate && { registrationOpen: false }),
         ...(draft && format && { format }),
         ...(draft && teamSize && { teamSize }),
       },

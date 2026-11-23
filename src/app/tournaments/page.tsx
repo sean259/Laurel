@@ -11,6 +11,7 @@ export default async function TournamentsPage() {
   const db = getDb();
   const userId = await currentUserId();
   const tournaments = await db.tournament.findMany({
+    where: { visibility: "PUBLIC" },
     orderBy: { createdAt: "desc" },
     include: { _count: { select: { participants: true, players: true } } },
     take: 50,
@@ -20,7 +21,7 @@ export default async function TournamentsPage() {
     <div>
       <PageHeader
         title="Tournaments"
-        description="Every bracket on Laurel, newest first."
+        description="Every public bracket on Laurel, newest first."
         actions={<ButtonLink href="/tournaments/new">New tournament</ButtonLink>}
       />
 

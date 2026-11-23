@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Tournament } from "@prisma/client";
-import { formatLabel } from "@/lib/formats";
+import { formatLabel, visibilityLabel } from "@/lib/formats";
 import { Badge } from "../atoms/Badge";
 import { StatusBadge } from "../molecules/StatusBadge";
 
@@ -12,7 +12,7 @@ export function TournamentCard({
   players,
   mine,
 }: {
-  tournament: Pick<Tournament, "id" | "name" | "game" | "status" | "format" | "teamSize" | "createdAt">;
+  tournament: Pick<Tournament, "id" | "name" | "game" | "status" | "format" | "teamSize" | "createdAt" | "visibility">;
   players: number;
   mine: boolean;
 }) {
@@ -34,6 +34,7 @@ export function TournamentCard({
       <div className="mt-auto flex flex-wrap items-center gap-2 pt-6 text-xs text-subtle">
         <Badge tone="outline">{formatLabel(t.format)}</Badge>
         {t.teamSize > 1 && <Badge tone="outline">{`${t.teamSize}v${t.teamSize}`}</Badge>}
+        {t.visibility !== "PUBLIC" && <Badge tone="neutral">{visibilityLabel(t.visibility)}</Badge>}
         <span className="ml-auto tabular-nums">
           {players} {players === 1 ? "player" : "players"} · <time dateTime={t.createdAt.toISOString()}>{dateFmt.format(t.createdAt)}</time>
         </span>

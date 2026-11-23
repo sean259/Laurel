@@ -24,3 +24,13 @@ export const FORMATS: { value: Format; label: string; description: string }[] = 
 ];
 
 export const formatLabel = (f: Format) => FORMATS.find((x) => x.value === f)?.label ?? f;
+
+export type Visibility = "PUBLIC" | "UNLISTED" | "PRIVATE";
+
+export const VISIBILITIES: { value: Visibility; label: string; description: string }[] = [
+  { value: "PUBLIC", label: "Public", description: "Listed on Laurel for anyone to find." },
+  { value: "UNLISTED", label: "Unlisted", description: "Only people with the link can view it." },
+  { value: "PRIVATE", label: "Private", description: "Only you can see it. No sign-up link." },
+];
+
+export const visibilityLabel = (v: Visibility) => VISIBILITIES.find((x) => x.value === v)?.label ?? v;

@@ -5,7 +5,7 @@
 | Layer | Choice | Why |
 |---|---|---|
 | Language | **TypeScript** | One language for frontend + backend; types catch bracket-logic bugs early. |
-| Framework | **Next.js 15 (App Router)** | Pages, API routes and server rendering in one project. Shared bracket pages render fast and are SEO-friendly. |
+| Framework | **Next.js 16 (App Router)** | Pages, API routes and server rendering in one project. Shared bracket pages render fast and are SEO-friendly. |
 | Styling | **Tailwind CSS** | Fast to build a clean UI without writing CSS files. |
 | Database | **PostgreSQL** | Tournaments are highly relational (tournament → participants → matches → next match). Transactions keep score reporting consistent. |
 | ORM | **Prisma** | Type-safe queries, easy migrations, Prisma Studio for inspecting data. |
@@ -18,7 +18,7 @@
 
 | What | Where | Cost to start |
 |---|---|---|
-| App | **Vercel** | Free (Hobby) |
+| App | **Cloudflare Workers** via OpenNext (moved from Vercel, see §4) | Free |
 | Database | **Neon** (serverless Postgres) | Free tier |
 | Images / logos (later) | Vercel Blob or Cloudflare R2 | Free tier |
 | Error tracking | Sentry | Free tier |
@@ -35,7 +35,7 @@ Alternatives: **Supabase** (Postgres + auth + realtime in one, so it replaces Ne
 ```mermaid
 flowchart TD
     A[Landing page] --> B{Signed in?}
-    B -- no --> L[Sign in with Google / Discord]
+    B -- no --> L[Sign in with an emailed code]
     L --> C
     B -- yes --> C[Dashboard: my tournaments]
     C --> D[Create tournament: name, game, format, settings]
@@ -82,9 +82,9 @@ Browser ──fetch──▶ /api/... route ──Zod validate──▶ Prisma t
 | `/tournaments` | Browse / list | ✅ skeleton |
 | `/tournaments/new` | Create form | ✅ skeleton |
 | `/tournaments/[id]` | Bracket view + score reporting | ✅ skeleton |
-| `/dashboard` | My tournaments | Phase 2 |
+| `/dashboard` | My tournaments | ✅ |
 | `/tournaments/[id]/edit` | Edit, rename players, reset, delete | ✅ |
-| `/tournaments/[id]/join` | Self-registration link | Phase 2 |
+| `/tournaments/[id]/join` | Self-registration link | ✅ |
 | `/u/[username]` | Player profile + history | Phase 5 |
 
 ### API
@@ -124,13 +124,13 @@ Browser ──fetch──▶ /api/... route ──Zod validate──▶ Prisma t
 ### Phase 2 — Accounts & ownership (1–2 weeks)
 - [x] Sign in with an emailed one-time code (Neon Auth)
 - [x] Only the tournament owner can manage it (start, scores, edit, reset, delete)
-- [ ] Dashboard of "my tournaments"
+- [x] Dashboard of "my tournaments" (`/dashboard`, grouped live / drafts / completed)
 - [x] Edit / delete tournaments; add/remove/reorder participants while in DRAFT (rename any time); reset to draft
 - [x] Undo or correct a reported score (refuses if a later match already depends on it)
-- [ ] Public vs. unlisted vs. private visibility
+- [x] Public vs. unlisted vs. private visibility (private = owner only, no sign-up link; non-public pages are `noindex`)
 - [x] Registration link: players join themselves with just a name (organizer opens/closes it)
 - [ ] Registration cap and close date
-- [ ] Rate limiting on write endpoints (Upstash Ratelimit)
+- [ ] Rate limiting on write endpoints, the public join endpoint first (Cloudflare Workers rate-limiting binding: free, no extra bundle size)
 
 ### Phase 3 — More formats (2–3 weeks)
 - [x] Double elimination (winners and losers brackets, grand final with bracket reset)
