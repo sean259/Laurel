@@ -36,6 +36,8 @@ export const updateTournamentSchema = z.object({
   teamSize: teamSize.optional(),
   registrationOpen: z.boolean().optional(),
   participants: participants.optional(),
+  /** The list the editor started from. If it no longer matches, someone signed up meanwhile. */
+  previousParticipants: participants.optional(),
 });
 
 export const joinSchema = z.object({ name: playerName });

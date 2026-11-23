@@ -18,7 +18,7 @@ export async function PATCH(req: Request, { params }: Ctx) {
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Invalid input" }, { status: 400 });
   }
-  const { name, game, format, teamSize, registrationOpen, participants } = parsed.data;
+  const { name, game, format, teamSize, registrationOpen, participants, previousParticipants } = parsed.data;
 
   const tournament = await db.tournament.findUnique({
     where: { id },
@@ -30,6 +30,13 @@ export async function PATCH(req: Request, { params }: Ctx) {
   if (!tournament) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
   const draft = tournament.status === "DRAFT";
+  const currentList = (draft && tournament.teamSize > 1 ? tournament.players : tournament.participants).map((p) => p.name);
+  if (participants && previousParticipants && !sameList(previousParticipants, currentList)) {
+    return NextResponse.json(
+      { error: "The player list changed while you were editing (someone may have signed up). Reload the page and try again." },
+      { status: 409 },
+    );
+  }
   if (format && format !== tournament.format && !draft) {
     return NextResponse.json({ error: "Reset the tournament to draft to change the format" }, { status: 409 });
   }

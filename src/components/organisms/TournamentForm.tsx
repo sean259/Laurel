@@ -69,12 +69,18 @@ export function TournamentForm({ tournament }: { tournament?: Existing }) {
     setError(null);
 
     const form = new FormData(e.currentTarget);
+    const list = locked ? renames.map((r) => r.trim()) : parse(players);
+    const original = tournament?.participants ?? [];
+    const listChanged = !editing || list.length !== original.length || list.some((p, i) => p !== original[i]);
     const body = {
       name: form.get("name"),
       game: editing ? String(form.get("game") ?? "") : form.get("game") || undefined,
       ...(!locked && { format: form.get("format"), teamSize }),
       registrationOpen,
-      participants: locked ? renames.map((r) => r.trim()) : parse(players),
+      // Only send the list when it was edited, along with the list it was edited from, so the
+      // server can refuse instead of silently dropping anyone who signed up in the meantime.
+      ...(listChanged && { participants: list }),
+      ...(editing && listChanged && { previousParticipants: original }),
     };
 
     const res = await fetch(editing ? `/api/tournaments/${tournament.id}` : "/api/tournaments", {
