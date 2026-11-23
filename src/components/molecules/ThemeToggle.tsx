@@ -1,6 +1,6 @@
 "use client";
 
-import { isDarkNow, setTheme, useThemeChoice, type ThemeChoice } from "@/lib/theme";
+import { isDarkNow, setSeasonal, setTheme, useSeasonal, useThemeChoice, type ThemeChoice } from "@/lib/theme";
 
 const iconButton =
   "grid h-9 w-9 place-items-center rounded-full text-muted transition-colors hover:bg-surface-sunken hover:text-ink";
@@ -52,6 +52,35 @@ const OPTIONS: { value: ThemeChoice; label: string; icon: React.ReactNode }[] = 
   { value: "light", label: "Light", icon: <Sun className="!h-4 !w-4" /> },
   { value: "dark", label: "Dark", icon: <Moon className="!h-4 !w-4" /> },
 ];
+
+/**
+ * Footer switch for the monthly seasonal theme. While on, the season's name (e.g. "Halloween")
+ * comes from CSS (`.season-name`), so it's right on the first paint.
+ */
+export function SeasonalSwitch() {
+  const on = useSeasonal();
+  return (
+    <button
+      type="button"
+      aria-pressed={on}
+      onClick={() => setSeasonal(!on)}
+      title={on ? "Turn off the seasonal theme" : "Turn on the seasonal theme"}
+      className={`inline-flex h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition-colors ${
+        on ? "border-accent-line bg-accent-soft text-ink" : "border-line bg-surface text-subtle hover:text-ink"
+      }`}
+    >
+      <svg aria-hidden viewBox="0 0 20 20" fill="currentColor" className={`h-3.5 w-3.5 ${on ? "text-accent-ink" : ""}`}>
+        <path d="M10 1.5c.4 2.9 1.6 5.1 3.5 6.5 1.4 1 3 1.6 5 2-2.9.4-5.1 1.6-6.5 3.5-1 1.4-1.6 3-2 5-.4-2.9-1.6-5.1-3.5-6.5-1.4-1-3-1.6-5-2 2.9-.4 5.1-1.6 6.5-3.5 1-1.4 1.6-3 2-5Z" />
+      </svg>
+      Seasonal
+      {on && (
+        <span className="text-muted">
+          · <span className="season-name" />
+        </span>
+      )}
+    </button>
+  );
+}
 
 /** Footer control: System / Light / Dark. */
 export function ThemePicker() {

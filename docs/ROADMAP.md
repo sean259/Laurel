@@ -155,6 +155,7 @@ Browser ──fetch──▶ /api/... route ──Zod validate──▶ Prisma t
 - [ ] Organizations / co-organizers with roles
 - [x] Search public tournaments by name or game, filter by status
 - [x] Dark mode (follows the device, or pick System / Light / Dark)
+- [x] Seasonal themes, one per month (on by default, footer switch; preview with `?season=christmas`)
 - [ ] Mobile-first bracket view, full accessibility pass
 - [ ] Analytics (Vercel Analytics / PostHog)
 - [ ] Optional: entry fees and prize pools via Stripe (needs legal review)

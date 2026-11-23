@@ -5,7 +5,7 @@ export function SampleBracket() {
   const Slot = ({ name, score, win, gold }: { name: string; score: number; win?: boolean; gold?: boolean }) => (
     <div
       className={`flex items-center justify-between px-3 py-2 text-sm ${
-        gold ? "text-amber-300" : win ? "text-white" : "text-zinc-400"
+        gold ? "text-accent-hover" : win ? "text-white" : "text-zinc-400"
       }`}
     >
       <span>{name}</span>
@@ -15,7 +15,7 @@ export function SampleBracket() {
   const Match = ({ children, gold }: { children: React.ReactNode; gold?: boolean }) => (
     <div
       className={`w-40 divide-y rounded-xl border ${
-        gold ? "divide-amber-400/30 border-amber-400/50 bg-amber-400/10" : "divide-white/10 border-white/10 bg-white/5"
+        gold ? "divide-accent/30 border-accent/50 bg-accent/10" : "divide-white/10 border-white/10 bg-white/5"
       }`}
     >
       {children}
@@ -35,12 +35,12 @@ export function SampleBracket() {
         </Match>
       </div>
       <div className="flex flex-col items-center gap-3">
-        <span className="text-xs uppercase tracking-widest text-amber-300">Final</span>
+        <span className="text-xs uppercase tracking-widest text-accent-hover">Final</span>
         <Match gold>
           <Slot name="Aurora" score={3} gold />
           <Slot name="Ember" score={2} />
         </Match>
-        <LaurelMark className="h-8 w-8 text-amber-400" />
+        <LaurelMark className="h-8 w-8 text-accent" />
       </div>
     </div>
   );

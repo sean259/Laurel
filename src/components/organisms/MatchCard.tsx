@@ -101,7 +101,7 @@ export function MatchCard({
   const frame = match.bye
     ? "border-dashed border-line bg-canvas"
     : showForm || ready
-      ? "border-amber-400 bg-surface ring-4 ring-amber-400/15"
+      ? "border-accent bg-surface ring-4 ring-accent/15"
       : "border-line bg-surface shadow-sm";
 
   return (

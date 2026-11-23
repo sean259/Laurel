@@ -11,7 +11,7 @@ const variants: Record<ButtonVariant, string> = {
   /** Main action on a light surface. */
   primary: "bg-ink text-on-ink hover:bg-ink-hover",
   /** The one action you want people to take (start, join, create). */
-  accent: "bg-accent text-inverse hover:bg-accent-hover",
+  accent: "bg-accent text-on-accent hover:bg-accent-hover",
   /** Secondary action on a light surface. */
   secondary: "border border-line-strong bg-surface text-ink hover:border-line-hover hover:bg-canvas",
   /** Low-emphasis text button. */

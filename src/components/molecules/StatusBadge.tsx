@@ -3,7 +3,7 @@ import { Badge, type BadgeTone } from "../atoms/Badge";
 
 const styles: Record<TournamentStatus, { label: string; tone: BadgeTone; dot: string }> = {
   DRAFT: { label: "Draft", tone: "neutral", dot: "bg-zinc-500" },
-  IN_PROGRESS: { label: "Live", tone: "accent", dot: "bg-amber-600 motion-safe:animate-pulse" },
+  IN_PROGRESS: { label: "Live", tone: "accent", dot: "bg-accent-strong motion-safe:animate-pulse" },
   COMPLETED: { label: "Completed", tone: "success", dot: "bg-emerald-600" },
 };
 

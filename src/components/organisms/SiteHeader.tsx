@@ -3,7 +3,7 @@ import { currentUser } from "@/lib/auth/server";
 import { ButtonLink } from "../atoms/Button";
 import { LaurelMark } from "../atoms/LaurelMark";
 import { NavLink } from "../molecules/NavLink";
-import { ThemePicker, ThemeToggle } from "../molecules/ThemeToggle";
+import { SeasonalSwitch, ThemePicker, ThemeToggle } from "../molecules/ThemeToggle";
 import { UserMenu } from "./UserMenu";
 
 export async function SiteHeader() {
@@ -12,8 +12,10 @@ export async function SiteHeader() {
     <header className="sticky top-0 z-30 border-b border-line bg-surface/85 backdrop-blur supports-[backdrop-filter]:bg-surface/70">
       <nav aria-label="Main" className="mx-auto flex h-16 max-w-6xl items-center gap-1 px-4 sm:gap-3">
         <Link href="/" className="mr-1 flex items-center gap-2 rounded-lg font-display text-xl font-semibold text-ink">
-          <LaurelMark className="h-6 w-6 text-amber-500" />
+          <LaurelMark className="h-6 w-6 text-accent-strong" />
           Laurel
+          {/* The season's emoji (CSS, see globals.css). Hidden on phones, where the header is full. */}
+          <span aria-hidden className="season-mark hidden sm:inline" />
         </Link>
         <NavLink href="/tournaments" exact>
           Tournaments
@@ -44,9 +46,12 @@ export function SiteFooter() {
     <footer className="border-t border-line py-8">
       <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 text-sm text-subtle sm:flex-row">
         <p className="flex items-center gap-2">
-          <LaurelMark className="h-4 w-4 text-amber-500" />© {new Date().getFullYear()} Laurel · Where champions are crowned
+          <LaurelMark className="h-4 w-4 text-accent-strong" />© {new Date().getFullYear()} Laurel · Where champions are crowned
         </p>
-        <ThemePicker />
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <SeasonalSwitch />
+          <ThemePicker />
+        </div>
       </div>
     </footer>
   );

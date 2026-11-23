@@ -15,7 +15,7 @@ import { Field } from "../molecules/Field";
 
 /** Selectable card used for the format radios and the sign-up checkbox. */
 const choiceCard =
-  "relative cursor-pointer rounded-2xl border border-line bg-surface p-4 transition hover:border-line-hover has-[:checked]:border-amber-500 has-[:checked]:bg-accent-soft has-[:checked]:ring-4 has-[:checked]:ring-amber-500/15 has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-60 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus has-[:focus-visible]:[outline-style:solid]";
+  "relative cursor-pointer rounded-2xl border border-line bg-surface p-4 transition hover:border-line-hover has-[:checked]:border-accent-strong has-[:checked]:bg-accent-soft has-[:checked]:ring-4 has-[:checked]:ring-accent-strong/15 has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-60 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus has-[:focus-visible]:[outline-style:solid]";
 
 const parse = (text: string) =>
   text
@@ -147,7 +147,7 @@ export function TournamentForm({ tournament }: { tournament?: Existing }) {
                   />
                   <span
                     aria-hidden
-                    className="absolute right-4 top-4 h-4 w-4 rounded-full border border-line-hover bg-surface peer-checked:border-[5px] peer-checked:border-amber-500"
+                    className="absolute right-4 top-4 h-4 w-4 rounded-full border border-line-hover bg-surface peer-checked:border-[5px] peer-checked:border-accent-strong"
                   />
                   <span className="block pr-6 text-sm font-semibold text-ink">{f.label}</span>
                   <span className="mt-1 block text-xs leading-relaxed text-muted">{f.description}</span>
@@ -181,7 +181,7 @@ export function TournamentForm({ tournament }: { tournament?: Existing }) {
                 checked={signups}
                 disabled={locked || isPrivate}
                 onChange={(e) => setRegistrationOpen(e.target.checked)}
-                className="mt-0.5 h-4 w-4 shrink-0 accent-amber-500"
+                className="mt-0.5 h-4 w-4 shrink-0 accent-accent-strong"
               />
               <span>
                 <span className="block text-sm font-semibold text-ink">Let players sign up with a link</span>
@@ -267,7 +267,7 @@ export function TournamentForm({ tournament }: { tournament?: Existing }) {
                   />
                   <span
                     aria-hidden
-                    className="absolute right-4 top-4 h-4 w-4 rounded-full border border-line-hover bg-surface peer-checked:border-[5px] peer-checked:border-amber-500"
+                    className="absolute right-4 top-4 h-4 w-4 rounded-full border border-line-hover bg-surface peer-checked:border-[5px] peer-checked:border-accent-strong"
                   />
                   <span className="block pr-6 text-sm font-semibold text-ink">{v.label}</span>
                   <span className="mt-1 block text-xs leading-relaxed text-muted">{v.description}</span>

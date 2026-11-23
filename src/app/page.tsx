@@ -37,17 +37,17 @@ export default async function Home() {
       <section className="relative overflow-hidden rounded-3xl border border-inverse-line bg-inverse px-6 py-16 text-white sm:px-12 lg:py-24">
         <div
           aria-hidden
-          className="pointer-events-none absolute -top-32 right-0 h-96 w-96 rounded-full bg-amber-500/20 blur-3xl"
+          className="pointer-events-none absolute -top-32 right-0 h-96 w-96 rounded-full bg-accent-strong/20 blur-3xl"
         />
         <div className="relative grid items-center gap-12 lg:grid-cols-2">
           <div>
-            <p className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1 text-xs uppercase tracking-widest text-amber-300">
+            <p className="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1 text-xs uppercase tracking-widest text-accent-hover">
               <LaurelMark className="h-4 w-4" /> Free tournament brackets
             </p>
             <h1 className="mt-6 font-display text-5xl font-semibold leading-[1.05] sm:text-6xl">
               Where champions
               <br />
-              are <span className="italic text-amber-400">crowned.</span>
+              are <span className="italic text-accent">crowned.</span>
             </h1>
             <p className="mt-6 max-w-md text-lg text-zinc-300">
               Create a bracket in under a minute, report scores as you play, and share one live
@@ -99,7 +99,7 @@ export default async function Home() {
 
       {/* CTA */}
       <Card padding="none" className="px-6 py-14 text-center">
-        <LaurelMark className="mx-auto h-10 w-10 text-amber-500" />
+        <LaurelMark className="mx-auto h-10 w-10 text-accent-strong" />
         <h2 className="mt-4 font-display text-3xl font-semibold text-ink">Ready when you are.</h2>
         <ButtonLink href="/tournaments/new" size="lg" className="mt-8">
           Start your first tournament

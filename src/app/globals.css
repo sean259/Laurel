@@ -41,6 +41,8 @@
   --color-inverse-line: var(--c-inverse-line);
   --color-accent: var(--c-accent);
   --color-accent-hover: var(--c-accent-hover);
+  /* Text on a solid accent fill (the accent button). */
+  --color-on-accent: var(--c-on-accent);
   --color-accent-strong: var(--c-accent-strong);
   --color-accent-soft: var(--c-accent-soft);
   --color-accent-line: var(--c-accent-line);
@@ -77,6 +79,7 @@
   --c-inverse-line: transparent;
   --c-accent: oklch(82.8% 0.189 84.429); /* amber-400 */
   --c-accent-hover: oklch(87.9% 0.169 91.605); /* amber-300 */
+  --c-on-accent: oklch(14.1% 0.005 285.823); /* zinc-950 */
   --c-accent-strong: oklch(76.9% 0.188 70.08); /* amber-500 */
   --c-accent-soft: oklch(98.7% 0.022 95.277); /* amber-50 */
   --c-accent-line: oklch(87.9% 0.169 91.605); /* amber-300 */
@@ -243,4 +246,122 @@
   left: calc(var(--bk-gap) / -2);
   width: calc(var(--bk-gap) / 2);
   border-top: 1.5px solid var(--bk-line);
+}
+
+/*
+ * Seasonal themes. When on (the default), an inline script sets data-season on <html> from the
+ * visitor's local month (see src/lib/theme-script.ts). Each season only picks a hue; the accent
+ * shades are derived from it below, for light and dark. Preview any season with ?season=<key>.
+ *   --sh  accent hue      --sc  accent chroma      --sl  accent lightness (0–1)
+ *   --sh2 hue that tints the background and the dark hero panels
+ *   --s-on  text color on the accent button (defaults to near-black)
+ *   --s-mark  emoji after the logo    --s-particle  falling decoration (optional)    --s-name  label
+ *   --s-fx-color  color of the falling decoration (defaults to the accent)
+ */
+:root[data-season="newyear"] { --sh: 235; --sc: 0.13; --sl: 0.74; --sh2: 250; --s-mark: "✨"; --s-particle: "❄"; --s-name: "New Year"; }
+:root[data-season="valentine"] { --sh: 0; --sc: 0.18; --sl: 0.72; --sh2: 350; --s-mark: "💘"; --s-particle: "♥"; --s-name: "Valentine's"; }
+:root[data-season="stpatrick"] { --sh: 150; --sc: 0.17; --sl: 0.72; --sh2: 150; --s-mark: "☘️"; --s-particle: "☘"; --s-name: "St. Patrick's"; }
+:root[data-season="spring"] { --sh: 310; --sc: 0.12; --sl: 0.74; --sh2: 320; --s-mark: "🌸"; --s-particle: "🌸"; --s-name: "Spring"; }
+:root[data-season="bloom"] { --sh: 100; --sc: 0.16; --sl: 0.85; --sh2: 110; --s-mark: "🌼"; --s-particle: "✿"; --s-name: "Bloom"; }
+:root[data-season="summer"] { --sh: 45; --sc: 0.17; --sl: 0.75; --sh2: 60; --s-mark: "🌞"; --s-name: "Summer"; }
+:root[data-season="tropical"] { --sh: 180; --sc: 0.12; --sl: 0.75; --sh2: 185; --s-mark: "🌴"; --s-name: "Tropical"; }
+:root[data-season="ocean"] { --sh: 225; --sc: 0.14; --sl: 0.72; --sh2: 230; --s-mark: "🌊"; --s-name: "Ocean"; }
+:root[data-season="harvestmoon"] { --sh: 275; --sc: 0.13; --sl: 0.74; --sh2: 280; --s-mark: "🌙"; --s-particle: "✦"; --s-name: "Harvest Moon"; }
+:root[data-season="autumn"] { --sh: 55; --sc: 0.16; --sl: 0.72; --sh2: 60; --s-mark: "🍂"; --s-particle: "🍂"; --s-name: "Autumn"; }
+:root[data-season="halloween"] { --sh: 55; --sc: 0.19; --sl: 0.74; --sh2: 305; --s-mark: "🎃"; --s-particle: "🦇"; --s-name: "Halloween"; }
+:root[data-season="christmas"] { --sh: 27; --sc: 0.2; --sl: 0.58; --sh2: 155; --s-on: #fff; --s-mark: "🎄"; --s-particle: "❄"; --s-fx-color: oklch(0.8 0.07 230); --s-name: "Christmas"; }
+
+/* Light. Overrides the base light and dark blocks, so the dark blocks below must set the same variables. */
+:root[data-season] {
+  --c-canvas: oklch(0.985 0.012 var(--sh2));
+  --c-inverse: oklch(0.17 0.035 var(--sh2));
+  --c-accent: oklch(var(--sl) var(--sc) var(--sh));
+  --c-accent-hover: oklch(calc(var(--sl) + 0.07) var(--sc) var(--sh));
+  --c-accent-strong: oklch(calc(var(--sl) - 0.06) var(--sc) var(--sh));
+  --c-on-accent: var(--s-on, oklch(0.17 0.02 var(--sh)));
+  --c-accent-soft: oklch(0.975 calc(var(--sc) * 0.15) var(--sh));
+  --c-accent-line: oklch(0.86 calc(var(--sc) * 0.6) var(--sh));
+  --c-accent-ink: oklch(0.5 var(--sc) var(--sh));
+  --c-accent-tint: oklch(0.95 calc(var(--sc) * 0.3) var(--sh));
+  --c-accent-tint-ink: oklch(0.38 calc(var(--sc) * 0.7) var(--sh));
+  --c-focus: oklch(0.6 var(--sc) var(--sh));
+  --c-selection: oklch(0.9 calc(var(--sc) * 0.5) var(--sh));
+}
+/* Dark. Keep both blocks in sync. */
+@media (prefers-color-scheme: dark) {
+  :root[data-season]:not([data-theme="light"]) {
+    --c-canvas: oklch(0.145 0.016 var(--sh2));
+    --c-inverse: oklch(0.19 0.035 var(--sh2));
+    --c-accent: oklch(var(--sl) var(--sc) var(--sh));
+    --c-accent-hover: oklch(calc(var(--sl) + 0.07) var(--sc) var(--sh));
+    --c-accent-strong: oklch(calc(var(--sl) + 0.03) var(--sc) var(--sh));
+    --c-on-accent: var(--s-on, oklch(0.17 0.02 var(--sh)));
+    --c-accent-soft: oklch(var(--sl) var(--sc) var(--sh) / 0.09);
+    --c-accent-line: oklch(var(--sl) var(--sc) var(--sh) / 0.35);
+    --c-accent-ink: oklch(0.82 var(--sc) var(--sh));
+    --c-accent-tint: oklch(var(--sl) var(--sc) var(--sh) / 0.18);
+    --c-accent-tint-ink: oklch(0.9 calc(var(--sc) * 0.5) var(--sh));
+    --c-focus: oklch(0.8 var(--sc) var(--sh));
+    --c-selection: oklch(var(--sl) var(--sc) var(--sh) / 0.35);
+  }
+}
+:root[data-season][data-theme="dark"] {
+  --c-canvas: oklch(0.145 0.016 var(--sh2));
+  --c-inverse: oklch(0.19 0.035 var(--sh2));
+  --c-accent: oklch(var(--sl) var(--sc) var(--sh));
+  --c-accent-hover: oklch(calc(var(--sl) + 0.07) var(--sc) var(--sh));
+  --c-accent-strong: oklch(calc(var(--sl) + 0.03) var(--sc) var(--sh));
+  --c-on-accent: var(--s-on, oklch(0.17 0.02 var(--sh)));
+  --c-accent-soft: oklch(var(--sl) var(--sc) var(--sh) / 0.09);
+  --c-accent-line: oklch(var(--sl) var(--sc) var(--sh) / 0.35);
+  --c-accent-ink: oklch(0.82 var(--sc) var(--sh));
+  --c-accent-tint: oklch(var(--sl) var(--sc) var(--sh) / 0.18);
+  --c-accent-tint-ink: oklch(0.9 calc(var(--sc) * 0.5) var(--sh));
+  --c-focus: oklch(0.8 var(--sc) var(--sh));
+  --c-selection: oklch(var(--sl) var(--sc) var(--sh) / 0.35);
+}
+
+/* Emoji after the logo, and the season's name next to the footer switch. */
+:root[data-season] .season-mark::after {
+  content: var(--s-mark, "");
+  font-size: 1rem;
+}
+:root[data-season] .season-name::before {
+  content: var(--s-name, "");
+}
+
+/*
+ * Falling decorations. The layer sits behind the page content (z-index -1, under cards and panels),
+ * so it only shows in the gaps. Off for anyone who prefers reduced motion.
+ */
+.season-fx {
+  display: none;
+}
+:root[data-season] .season-fx {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  color: var(--s-fx-color, var(--color-accent));
+}
+.season-fx span {
+  position: absolute;
+  top: -3rem;
+  opacity: 0.5;
+  animation: season-fall linear infinite;
+}
+.season-fx span::before {
+  content: var(--s-particle, "");
+}
+@keyframes season-fall {
+  to {
+    transform: translate3d(var(--drift, 0), 110vh, 0) rotate(var(--spin, 0deg));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root[data-season] .season-fx {
+    display: none;
+  }
 }

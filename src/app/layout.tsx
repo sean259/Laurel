@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import { SiteFooter, SiteHeader } from "@/components/organisms/SiteHeader";
 import { themeScript } from "@/lib/theme-script";
+import { SeasonalEffects } from "@/components/atoms/SeasonalEffects";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         >
           Skip to content
         </a>
+        <SeasonalEffects />
         <SiteHeader />
         <main id="main" tabIndex={-1} className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 outline-none sm:py-10">
           {children}
